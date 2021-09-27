@@ -41,11 +41,11 @@ def load_data(dataset_dir):
 def tokenized_dataset(dataset, tokenizer):
     
     copied_dataset = list(dataset['sentence'])
-    """cleaned_dataset = []
-    for sentence in copied_dataset:
-        sentence = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…《》▲△]', ' ', sentence)
-        cleaned_dataset.append(sentence)"""
-
+    cleaned_dataset = []
+    # for sentence in copied_dataset:
+    #     sentence = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\[\]\<\>`\'…《》▲△]', ' ', sentence)
+    #     cleaned_dataset.append(sentence)
+    # print(cleaned_dataset[:100])
     
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
     concat_entity = []
@@ -56,7 +56,7 @@ def tokenized_dataset(dataset, tokenizer):
 
     tokenized_sentences = tokenizer(
         concat_entity,
-        cleaned_dataset,
+        copied_dataset, #여기를 수정해서 돌려주시면 됩니다. cleaned dataset으로.
         return_tensors="pt",
         padding=True,
         truncation=True,
