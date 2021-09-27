@@ -1,2 +1,7 @@
 #ignore files whose name begin with "._"
 ._*.*
+#ignore folders
+**/wandb/
+**/results/
+**/logs/
+**/__pycache__/
