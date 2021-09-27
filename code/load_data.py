@@ -2,7 +2,7 @@ import pickle as pickle
 import os
 import pandas as pd
 import torch
-
+import re
 
 class RE_Dataset(torch.utils.data.Dataset):
   """ Dataset 구성을 위한 class."""
@@ -39,19 +39,28 @@ def load_data(dataset_dir):
   return dataset
 
 def tokenized_dataset(dataset, tokenizer):
-  """ tokenizer에 따라 sentence를 tokenizing 합니다."""
-  concat_entity = []
-  for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
-    temp = ''
-    temp = e01 + '[SEP]' + e02
-    concat_entity.append(temp)
-  tokenized_sentences = tokenizer(
-      concat_entity,
-      list(dataset['sentence']),
-      return_tensors="pt",
-      padding=True,
-      truncation=True,
-      max_length=256,
-      add_special_tokens=True,
-      )
-  return tokenized_sentences
+    
+    copied_dataset = list(dataset['sentence'])
+    """cleaned_dataset = []
+    for sentence in copied_dataset:
+        sentence = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…《》▲△]', ' ', sentence)
+        cleaned_dataset.append(sentence)"""
+
+    
+    """ tokenizer에 따라 sentence를 tokenizing 합니다."""
+    concat_entity = []
+    for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
+      temp = ''
+      temp = e01 + '[SEP]' + e02
+      concat_entity.append(temp)
+
+    tokenized_sentences = tokenizer(
+        concat_entity,
+        cleaned_dataset,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=256,
+        add_special_tokens=True,
+        )
+    return tokenized_sentences
