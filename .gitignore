@@ -1,0 +1,2 @@
+#ignore files whose name begin with "._"
+._*.*
