@@ -3,7 +3,8 @@ import os
 import pandas as pd
 import torch
 import re
-
+from collections import OrderedDict
+import random
 class RE_Dataset(torch.utils.data.Dataset):
   """ Dataset 구성을 위한 class."""
   def __init__(self, pair_dataset, labels):
@@ -32,11 +33,32 @@ def preprocessing_dataset(dataset):
   return out_dataset
 
 def load_data(dataset_dir):
-  """ csv 파일을 경로에 맡게 불러 옵니다. """
+  """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
+  dataset = data_pruning(pd_dataset)
   dataset = preprocessing_dataset(pd_dataset)
   
   return dataset
+
+def data_pruning(dataset):
+    dataset = pd.DataFrame(dataset)
+    data0 = dataset.loc[dataset['label'] == 'no_relation']
+    # data1 = dataset.loc[dataset['label'] == 'org:top_members/employees']
+    # data6 = dataset.loc[dataset['label'] == 'per:employee_of']
+    others = dataset.loc[dataset['label'] != 'no_relation']
+    #& dataset['label'] != 'org:top_members/employees' & dataset['label'] != 'per:employee_of']
+    
+    for id in range(len(data0)):
+        prob = random.randint(0,10)
+        if prob >= 7:
+             data0 = data0.drop(data0[data0.id == id].index)
+    dataset = pd.concat([data0,others])
+    
+    return dataset
+        
+
+
+
 
 def clean_punc(text):
     punct_mapping = {'ʿ': '', 'ū': 'u', 'è': 'e', 'ȳ': 'y', 'ồ': 'o', 'ề': 'e', 'â': 'a', 'æ': 'ae', 'ő': 'o', 'ῶ': 'ω', '𑀕': 'Λ', 'ß': 'β', 'ヶ': 'ケ', '‘': "'", '₹': 'e', '´': "'", '°': '', '€': 'e', '™': 'tm', '√': ' sqrt ', '×': 'x', '²': '2', '—': '-', '–': '-', '’': "'", '_': '-', '`': "'", '“': '"', '”': '"', '£': 'e', '∞': 'infinity', '÷': '/', '•': '.', 'à': 'a', '−': '-', 'Ῥ': 'Ρ', 'ầ': 'a', '́': "'", 'ò': 'o', 'Ö': 'O', 'Š': 'S', 'ệ': 'e', 'Ś': 'S', 'ē': 'e', 'ä': 'a', 'ć': 'c', 'ë': 'e', 'å': 'a', 'Ǧ': 'G', 'ạ': 'a', 'ņ': 'n', 'İ': 'I', 'ğ': 'g', 'ê': 'e', 'Č': 'C', 'ã': 'a', 'ḥ': 'h', 'ả': 'a', 'ễ': 'e', '％': '%', 'ợ': 'o', 'Ú': 'U', 'ư': 'u', 'Ž': 'Z', 'ú': 'u', 'É': 'E', 'Ó': 'O', 'ü': 'u', 'é': 'e', 'ā': 'a', 'š': 's', '𑀥': 'D', 'í': 'i', 'û': 'u', 'ý': 'y', 'ī': 'i', 'ï': 'i', 'ộ': 'o', 'ì': 'i', 'ọ': 'o', 'ş': 's', 'ó': 'o', 'ñ': 'n', 'ậ': 'a', 'Â': 'A', 'ù': 'u', 'ô': 'o', 'ố': 'o', 'Á': 'A', 'ö': 'o', 'ơ': 'o', 'ç': 'c', 'ˈ': "'", 'µ': 'μ', '／': '/', '（': '(', 'ｍ': 'm', '˘': ' ', '𑀫': 'ma', '？': '?', 'ł': 'l', 'Đ': 'D', '：': ':', '･': ',', 'Ç': 'C', 'ı': 'i', '，': ',', '𥘺': '祉', '·': ',', '＇': "'", ' ': ' ', '）': ')', '１': '1', 'ø': 'o', '～': '~', '³': '3', '(˘ ³˘)': '', '˹': '"', '｢': '"', '｣': '"', '«': '<<', '˼': '"', '»': '>>', '®': 'R'}
@@ -46,14 +68,13 @@ def clean_punc(text):
     return text
 
 def tokenized_dataset(dataset, tokenizer):
-    
     copied_dataset = list(dataset['sentence'])
     cleaned_dataset = []
     for sentence in copied_dataset:
-    #     sentence = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\[\]\<\>`\'…《》▲△]', ' ', sentence)
+        sentence = re.sub('[^0-9a-zA-Z가-힣一-龥() ]',' ',sentence)
+
         sentence = clean_punc(sentence)
-        sentence = re.sub('[^0-9a-zA-Z가-힣一-龥ぁ-ゔァ-ヴー々〆〤()\\u0250-\\u02AD\\u1200-\\u137F\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70‌​-\\uFEFF\\u0900-\\u097F\\u0400-\\u04FF\\u0370-\\u03FF ]',' ',sentence)
-        sentence = re.sub('\s+',' ',sentence)
+        #clean_punc만 된 상태, 구식 
         cleaned_dataset.append(sentence)
     
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
@@ -65,7 +86,7 @@ def tokenized_dataset(dataset, tokenizer):
 
     tokenized_sentences = tokenizer(
         concat_entity,
-        cleaned_dataset, #여기를 수정해서 돌려주시면 됩니다. cleaned dataset으로.
+        cleaned_dataset, 
         return_tensors="pt",
         padding=True,
         truncation=True,
