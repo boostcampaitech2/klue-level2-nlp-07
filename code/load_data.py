@@ -86,7 +86,7 @@ def tokenized_dataset(dataset, tokenizer):
 
         sentence = clean_punc(sentence)
         sentence = re.sub(',','',sentence)
-        sentence = re.sub('[^0-9a-zA-Z가-힣一-龥ぁ-ゔァ-ヴー々〆〤()]',' ',sentence)
+        sentence = re.sub('[^0-9a-zA-Z가-힣一-龥()]',' ',sentence)
         sentence = re.sub('\s+',' ',sentence)
         cleaned_dataset.append(sentence)
     
