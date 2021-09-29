@@ -36,25 +36,36 @@ def load_data(dataset_dir):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
   dataset = data_pruning(pd_dataset)
-  dataset = preprocessing_dataset(pd_dataset)
+  dataset = preprocessing_dataset(dataset)
   
   return dataset
 
-def data_pruning(dataset):
-    dataset = pd.DataFrame(dataset)
-    data0 = dataset.loc[dataset['label'] == 'no_relation']
-    # data1 = dataset.loc[dataset['label'] == 'org:top_members/employees']
-    # data6 = dataset.loc[dataset['label'] == 'per:employee_of']
-    others = dataset.loc[dataset['label'] != 'no_relation']
-    #& dataset['label'] != 'org:top_members/employees' & dataset['label'] != 'per:employee_of']
+def data_pruning(dataset,switch=True):
+    from tqdm import tqdm
+    if switch == True:
+        print("================================================================================")
+        print("The length of dataset before pruning is : ",len(dataset))
+        dataset = pd.DataFrame(dataset)
+        data0 = dataset.loc[dataset['label'] == 'no_relation']
+        # data1 = dataset.loc[dataset['label'] == 'org:top_members/employees']
+        # data6 = dataset.loc[dataset['label'] == 'per:employee_of']
+        others = dataset.loc[dataset['label'] != 'no_relation']
+        #& dataset['label'] != 'org:top_members/employees' & dataset['label'] != 'per:employee_of']
+        
+        for id in tqdm(range(len(data0)),desc="Pruning....."):
+            prob = random.randint(0,10)
+            if prob >= 4:
+                data0 = data0.drop(data0[data0.id == id].index)
+        dataset = pd.concat([data0,others])
+        print("The length of dataset after pruning is : ",len(dataset))
+        print("================================================================================")
+
+        return dataset
+
+    elif switch == False:
+        return dataset
     
-    for id in range(len(data0)):
-        prob = random.randint(0,10)
-        if prob >= 7:
-             data0 = data0.drop(data0[data0.id == id].index)
-    dataset = pd.concat([data0,others])
     
-    return dataset
         
 
 
@@ -71,10 +82,11 @@ def tokenized_dataset(dataset, tokenizer):
     copied_dataset = list(dataset['sentence'])
     cleaned_dataset = []
     for sentence in copied_dataset:
-        sentence = re.sub('[^0-9a-zA-Z가-힣一-龥() ]',' ',sentence)
+        
 
         sentence = clean_punc(sentence)
-        #clean_punc만 된 상태, 구식 
+        sentence = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\[\]\<\>`\'…《》▲△]', ' ', sentence)
+        #clean_punc만 된 상태, 구식 방식 사용
         cleaned_dataset.append(sentence)
     
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
@@ -90,7 +102,7 @@ def tokenized_dataset(dataset, tokenizer):
         return_tensors="pt",
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=128,
         add_special_tokens=True,
         )
     return tokenized_sentences
