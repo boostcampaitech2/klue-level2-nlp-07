@@ -15,7 +15,7 @@ def inference(model, tokenized_sent, device):
     test dataset을 DataLoader로 만들어 준 후,
     batch_size로 나눠 model이 예측 합니다.
   """
-  dataloader = DataLoader(tokenized_sent, batch_size=16, shuffle=False)
+  dataloader = DataLoader(tokenized_sent, batch_size=32, shuffle=False)
   model.eval()
   output_pred = []
   output_prob = []
@@ -24,7 +24,7 @@ def inference(model, tokenized_sent, device):
       outputs = model(
           input_ids=data['input_ids'].to(device),
           attention_mask=data['attention_mask'].to(device),
-          token_type_ids=data['token_type_ids'].to(device)
+          # token_type_ids=data['token_type_ids'].to(device)
           )
     logits = outputs[0]
     prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
@@ -65,7 +65,8 @@ def main(args):
   """
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   # load tokenizer
-  Tokenizer_NAME = "klue/bert-base"
+  # Tokenizer_NAME = "klue/bert-base"
+  Tokenizer_NAME = "klue/roberta-base"
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
   ## load my model
