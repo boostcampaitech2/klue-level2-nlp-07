@@ -85,8 +85,9 @@ def tokenized_dataset(dataset, tokenizer):
         
 
         sentence = clean_punc(sentence)
-        sentence = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\[\]\<\>`\'…《》▲△]', ' ', sentence)
-        #clean_punc만 된 상태, 구식 방식 사용
+        sentence = re.sub(',','',sentence)
+        sentence = re.sub('[^0-9a-zA-Z가-힣一-龥ぁ-ゔァ-ヴー々〆〤()]',' ',sentence)
+        sentence = re.sub('\s+',' ',sentence)
         cleaned_dataset.append(sentence)
     
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
