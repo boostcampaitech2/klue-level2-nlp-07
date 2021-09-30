@@ -103,9 +103,9 @@ def train():
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
     output_dir='./results',          # output directory
-    save_total_limit=5,              # number of total save model.
+    save_total_limit=2,              # number of total save model.
     save_steps=500,                 # model saving step.
-    num_train_epochs=5,              # total number of training epochs
+    num_train_epochs=3,              # total number of training epochs
     learning_rate=5e-5,               # learning_rate
     per_device_train_batch_size=32,  # batch size per device during training
     per_device_eval_batch_size=32,   # batch size for evaluation

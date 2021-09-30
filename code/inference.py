@@ -67,6 +67,7 @@ def main(args):
   # load tokenizer
   # Tokenizer_NAME = "klue/bert-base"
   Tokenizer_NAME = "klue/roberta-large"
+  # Tokenizer_NAME = "xlm-roberta-base"
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
   ## load my model
