@@ -81,12 +81,10 @@ def clean_sentence(sentence):
     return sentence
 
 def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
-    
     copied_dataset = list(dataset['sentence'])
     cleaned_dataset = []
     for sentence in copied_dataset:
         sentence = clean_sentence(sentence)
-        
         cleaned_dataset.append(sentence)
     
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
