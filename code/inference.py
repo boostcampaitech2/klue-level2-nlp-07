@@ -83,7 +83,7 @@ def main(args):
   ## load test datset
   test_dataset_dir = "../dataset/test/test_data.csv"
   test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer)
-  Re_test_dataset = RE_Dataset(test_dataset ,test_label)
+  Re_test_dataset = RE_Dataset(test_dataset ,test_label,MODEL_NAME)
 
   ## predict answer
   pred_answer, output_prob = inference(model, Re_test_dataset, device) # model에서 class 추론
