@@ -11,7 +11,6 @@ from sklearn.model_selection import StratifiedKFold
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
 from load_data import *
 
-
 def draw_confusion_matrix(true, pred):
     cm = confusion_matrix(true, pred)
     df = pd.DataFrame(cm/np.sum(cm, axis=1)[:, None],
@@ -122,7 +121,7 @@ def train():
     output_dir='./results',          # output directory
     save_total_limit=5,              # number of total save model.
     save_steps=500,                 # model saving step.
-    num_train_epochs=5,              # total number of training epochs
+    num_train_epochs=3,              # total number of training epochs
     learning_rate=5e-5,               # learning_rate
     per_device_train_batch_size=50,  # batch size per device during training
     per_device_eval_batch_size=50,   # batch size for evaluation
