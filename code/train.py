@@ -4,26 +4,15 @@ import pandas as pd
 import torch
 import sklearn
 import numpy as np
+
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix
 from sklearn.model_selection import StratifiedKFold
+
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
 from load_data import *
 
-def draw_confusion_matrix(true, pred):
-    cm = confusion_matrix(true, pred)
-    df = pd.DataFrame(cm/np.sum(cm, axis=1)[:, None],
-                index=list(range(30)), columns=list(range(30)))
-    df = df.fillna(0)  # NaN 값을 0으로 변경
-    plt.figure(figsize=(16, 16))
-    plt.tight_layout()
-    plt.suptitle('Confusion Matrix')
-    sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True label")
-    plt.savefig(f"./confusion_matrixs/confusion_matrix.png")
-    plt.close('all')
 
 def klue_re_micro_f1(preds, labels):
     """KLUE-RE micro f1 (except no_relation)"""
@@ -65,8 +54,7 @@ def compute_metrics(pred):
   f1 = klue_re_micro_f1(preds, labels)
   auprc = klue_re_auprc(probs, labels)
   acc = accuracy_score(labels, preds) # 리더보드 평가에는 포함되지 않습니다.
-  draw_confusion_matrix(labels, preds)
-  
+
   return {
       'micro f1 score': f1,
       'auprc' : auprc,
@@ -85,6 +73,8 @@ def label_to_num(label):
 def train():
   # load model and tokenizer
   # MODEL_NAME = "bert-base-uncased"
+
+
   MODEL_NAME = "klue/roberta-large"
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -119,21 +109,24 @@ def train():
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
     output_dir='./results',          # output directory
-    save_total_limit=5,              # number of total save model.
+    save_total_limit=2,              # number of total save model.
     save_steps=500,                 # model saving step.
     num_train_epochs=3,              # total number of training epochs
     learning_rate=5e-5,               # learning_rate
-    per_device_train_batch_size=50,  # batch size per device during training
-    per_device_eval_batch_size=50,   # batch size for evaluation
+    per_device_train_batch_size=32,  # batch size per device during training
+    per_device_eval_batch_size=32,   # batch size for evaluation
     warmup_steps=500,                # number of warmup steps for learning rate scheduler
     weight_decay=0.01,               # strength of weight decay
     logging_dir='./logs',            # directory for storing logs
     logging_steps=100,              # log saving step.
     evaluation_strategy='steps', # evaluation strategy to adopt during training
+           # evaluation step. 500 -> 100
+
                                   # `no`: No evaluation during training.
                                   # `steps`: Evaluate every `eval_steps`.
                                   # `epoch`: Evaluate every end of epoch.
     eval_steps = 500,            # evaluation step.
+
     load_best_model_at_end = True 
   )
   trainer = Trainer(
