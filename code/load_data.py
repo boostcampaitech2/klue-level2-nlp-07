@@ -29,8 +29,13 @@ def preprocessing_dataset(dataset):
 
     subject_entity.append(i)
     object_entity.append(j)
-  out_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
-  return out_dataset
+  
+  # 원래 이름 output_dataset인데 data로 바꾸겠음  
+  data = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
+  data['sentence'] = data['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  data['subject_entity'] = data['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  data['object_entity'] = data['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  return data
 
 def load_data(dataset_dir):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
