@@ -87,7 +87,7 @@ def clean_punc(text):
 
 def tokenized_dataset_for_train(dataset, tokenizer):
     copied_dataset = list(dataset['sentence'])
-    
+    now = time.localtime()
     cleaned_dataset = []
     cleaned_dataset2 = []
     file = 'aeda_train_data.pkl'
@@ -106,9 +106,14 @@ def tokenized_dataset_for_train(dataset, tokenizer):
             
 
 
-        for sentence in tqdm(cleaned_dataset):
-            augmented = aeda(sentence)
+        for sentence in tqdm(cleaned_dataset,desc="Augmentation on progress..."):
+            sentence_a = sentence[:len(sentence)//2]
+            sentence_b = sentence[len(sentence)//2:]
+            augmented_a = aeda(sentence_a)
+            augmented_b = aeda(sentence_b)
+            augmented = augmented_a+augmented_b
             cleaned_dataset2.append(augmented)
+            
             
             
             
@@ -227,4 +232,5 @@ def tokenized_dataset_for_test(dataset, tokenizer):
         add_special_tokens=True,
         return_token_type_ids=False,
         )
+    
     return tokenized_sentences
