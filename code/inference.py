@@ -10,12 +10,12 @@ import numpy as np
 import argparse
 from tqdm import tqdm
 
-def inference(model, tokenized_sent, device):
+def inference(model, tokenized_sent, device, batch_size):
   """
     test dataset을 DataLoader로 만들어 준 후,
     batch_size로 나눠 model이 예측 합니다.
   """
-  dataloader = DataLoader(tokenized_sent, batch_size=32, shuffle=False)
+  dataloader = DataLoader(tokenized_sent, batch_size=batch_size, shuffle=False)
   model.eval()
   output_pred = []
   output_prob = []
@@ -73,24 +73,24 @@ def main(args):
   """
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   # load tokenizer
-  # Tokenizer_NAME = "klue/bert-base"
-  Tokenizer_NAME = "klue/roberta-large"
-  # Tokenizer_NAME = "xlm-roberta-base"
+  Tokenizer_NAME = args.tokenizer
+  MODEL_NAME = "./best_model/" + args.model_dir # model dir.
+  BSZ = args.bsz
+  
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
   ## load my model
-  MODEL_NAME = args.model_dir # model dir.
-  model = AutoModelForSequenceClassification.from_pretrained(args.model_dir)
+  model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
   model.parameters
   model.to(device)
 
   ## load test datset
   test_dataset_dir = "../dataset/test/test_data.csv"
-  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer,MODEL_NAME)
+  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, MODEL_NAME)
   Re_test_dataset = RE_Dataset(test_dataset ,test_label)
 
   ## predict answer
-  pred_answer, output_prob = inference(model, Re_test_dataset, device) # model에서 class 추론
+  pred_answer, output_prob = inference(model, Re_test_dataset, device, BSZ) # model에서 class 추론
   pred_answer = num_to_label(pred_answer) # 숫자로 된 class를 원래 문자열 라벨로 변환.
   
   ## make csv file with predicted answer
@@ -105,7 +105,9 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   
   # model dir
-  parser.add_argument('--model_dir', type=str, default="./best_model")
+  parser.add_argument('--model_dir', type=str, default=None)
+  parser.add_argument('--tokenizer', type=str, default="klue/roberta-large")
+  parser.add_argument('--bsz', type=int, default=32)
   args = parser.parse_args()
   print(args)
   main(args)

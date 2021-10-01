@@ -5,7 +5,6 @@ import torch
 import re
 from collections import OrderedDict
 import random
-from tqdm import tqdm
 
 class RE_Dataset(torch.utils.data.Dataset):
   """ Dataset 구성을 위한 class."""
@@ -48,6 +47,7 @@ def load_data(dataset_dir):
 
 def data_pruning(dataset,switch=True):
     if switch:
+        from tqdm import tqdm
         print("================================================================================")
         print("The length of dataset before pruning is : ",len(dataset))
         dataset = pd.DataFrame(dataset)
