@@ -21,11 +21,19 @@ def inference(model, tokenized_sent, device):
   output_prob = []
   for i, data in enumerate(tqdm(dataloader)):
     with torch.no_grad():
-      outputs = model(
-          input_ids=data['input_ids'].to(device),
-          attention_mask=data['attention_mask'].to(device),
-          # token_type_ids=data['token_type_ids'].to(device)
-          )
+
+      if model.config['model_type']!='roberta':
+        outputs = model(
+            input_ids=data['input_ids'].to(device),
+            attention_mask=data['attention_mask'].to(device),
+            token_type_ids=data['token_type_ids'].to(device)
+            )
+      else:
+        outputs = model(
+            input_ids=data['input_ids'].to(device),
+            attention_mask=data['attention_mask'].to(device),
+            )
+
     logits = outputs[0]
     prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
     logits = logits.detach().cpu().numpy()
