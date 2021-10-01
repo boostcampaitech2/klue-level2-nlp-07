@@ -83,12 +83,9 @@ def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
     copied_dataset = list(dataset['sentence'])
     cleaned_dataset = []
     for sentence in copied_dataset:
-        
-
         sentence = clean_punc(sentence)
         sentence = re.sub('[\\u0250-\\u02AD\\u1200-\\u137F\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70‌​-\\uFEFF\\u0900-\\u097F\\u0400-\\u04FF\\u0370-\\u03FF]',' ',sentence)
         sentence = re.sub('\s+',' ',sentence)
-        sentence = re.sub('\([, ]*\)','',sentence)
         cleaned_dataset.append(sentence)
     
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
