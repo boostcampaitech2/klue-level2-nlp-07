@@ -6,7 +6,7 @@ import sklearn
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
 from load_data import *
