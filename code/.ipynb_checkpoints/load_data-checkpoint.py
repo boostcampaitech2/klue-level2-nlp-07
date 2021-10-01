@@ -78,7 +78,6 @@ def tokenized_dataset(dataset, tokenizer, model):
           truncation=True,
           max_length=256,
           add_special_tokens=True,
-          # return_token_type_ids=False if 'roberta' in model else True,
-          return_token_type_ids=False,
+          return_token_type_ids=False if 'roberta' in model else True,
           )
     return tokenized_sentences
