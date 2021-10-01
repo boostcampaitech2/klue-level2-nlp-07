@@ -29,8 +29,13 @@ def preprocessing_dataset(dataset):
 
     subject_entity.append(i)
     object_entity.append(j)
-  out_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
-  return out_dataset
+  
+  # 원래 이름 output_dataset인데 data로 바꾸겠음  
+  data = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
+  data['sentence'] = data['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  data['subject_entity'] = data['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  data['object_entity'] = data['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  return data
 
 def load_data(dataset_dir):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
@@ -84,7 +89,7 @@ def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
     cleaned_dataset = []
     for sentence in copied_dataset:
         sentence = clean_punc(sentence)
-        sentence = re.sub('[\\u0250-\\u02AD\\u1200-\\u137F\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70‌​-\\uFEFF\\u0900-\\u097F\\u0400-\\u04FF\\u0370-\\u03FF]',' ',sentence)
+        sentence = re.sub('[\\u0250-\\u02AD\\u1200-\\u137F\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70‌​-\\uFEFF\\u0900-\\u097F\\u0400-\\u04FF\\u0370-\\u03FF\\u11000-\\u1107F]',' ',sentence)
         sentence = re.sub('\s+',' ',sentence)
         cleaned_dataset.append(sentence)
     
