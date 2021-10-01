@@ -5,6 +5,8 @@ import torch
 import re
 from collections import OrderedDict
 import random
+from tqdm import tqdm
+
 class RE_Dataset(torch.utils.data.Dataset):
   """ Dataset 구성을 위한 class."""
   def __init__(self, pair_dataset, labels):
@@ -24,18 +26,17 @@ def preprocessing_dataset(dataset):
   subject_entity = []
   object_entity = []
   for i,j in zip(dataset['subject_entity'], dataset['object_entity']):
-    i = i[1:-1].split(',')[0].split(':')[1]
-    j = j[1:-1].split(',')[0].split(':')[1]
+    i = i.split("'word': ")[1].split(", 'start_idx'")[0]
+    j = j.split("'word': ")[1].split(", 'start_idx'")[0]
 
     subject_entity.append(i)
     object_entity.append(j)
   
-  # 원래 이름 output_dataset인데 data로 바꾸겠음  
-  data = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
-  data['sentence'] = data['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
-  data['subject_entity'] = data['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
-  data['object_entity'] = data['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
-  return data
+  output_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
+  output_dataset['sentence'] = output_dataset['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  output_dataset['subject_entity'] = output_dataset['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  output_dataset['object_entity'] = output_dataset['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  return output_dataset
 
 def load_data(dataset_dir):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
@@ -46,8 +47,7 @@ def load_data(dataset_dir):
   return dataset
 
 def data_pruning(dataset,switch=True):
-    from tqdm import tqdm
-    if switch == True:
+    if switch:
         print("================================================================================")
         print("The length of dataset before pruning is : ",len(dataset))
         dataset = pd.DataFrame(dataset)
@@ -66,9 +66,7 @@ def data_pruning(dataset,switch=True):
         print("================================================================================")
 
         return dataset
-
-    elif switch == False:
-        return dataset
+    return dataset
 
 def clean_punc(text):
     punct_mapping = { 'ū': 'u', 'è': 'e', 'ȳ': 'y', 'ồ': 'o', 'ề': 'e', 'â': 'a', 'æ': 'ae', 'ő': 'o', 'α':'alpha','ß':'beta', 'β':'beta', 'ヶ': 'ケ', '‘': "'", '₹': 'e', '´': "'", '°': '', '€': 'euro', '™': 'tm', '√': ' sqrt ', '×': 'x', '²': '2', '—': '-', '–': '-', '’': "'", '_': '-', '`': "'", '“': '"', '”': '"', '£': 'e', '∞': 'infinity', '÷': '/', '•': '.', 'à': 'a', '−': '-', 'Ῥ': 'Ρ', 'ầ': 'a', '́': "'", 'ò': 'o', 'Ö': 'O', 'Š': 'S', 'ệ': 'e', 'Ś': 'S', 'ē': 'e', 'ä': 'a', 'ć': 'c', 'ë': 'e', 'å': 'a', 'Ǧ': 'G', 'ạ': 'a', 'ņ': 'n', 'İ': 'I', 'ğ': 'g', 'ê': 'e', 'Č': 'C', 'ã': 'a', 'ḥ': 'h', 'ả': 'a', 'ễ': 'e', '％': '%', 'ợ': 'o', 'Ú': 'U', 'ư': 'u', 'Ž': 'Z', 'ú': 'u', 'É': 'E', 'Ó': 'O', 'ü': 'u', 'é': 'e', 'ā': 'a', 'š': 's', '𑀥': 'D', 'í': 'i', 'û': 'u', 'ý': 'y', 'ī': 'i', 'ï': 'i', 'ộ': 'o', 'ì': 'i', 'ọ': 'o', 'ş': 's', 'ó': 'o', 'ñ': 'n', 'ậ': 'a', 'Â': 'A', 'ù': 'u', 'ô': 'o', 'ố': 'o', 'Á': 'A', 'ö': 'o', 'ơ': 'o', 'ç': 'c', 'ˈ': "'", 'µ': 'μ', '／': '/', '（': '(', 'ｍ': 'm', '˘': ' ', '？': '?', 'ł': 'l', 'Đ': 'D', '：': ':', '･': ',', 'Ç': 'C', 'ı': 'i', '，': ',', '𥘺': '祉', '·': ',', '＇': "'", ' ': ' ', '）': ')', '１': '1', 'ø': 'o', '～': '~', '³': '3', '(˘ ³˘)': '', '˹': '<', '｢': '<', '｣': '>', '«': '<', '˼': '>', '»': '>'}
@@ -92,7 +90,7 @@ def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
       temp = ''
       temp = e01 + '[SEP]' + e02
       concat_entity.append(temp)
-    if 'roberta' not in MODEL_NAME:
+
       tokenized_sentences = tokenizer(
           concat_entity,
           cleaned_dataset, #여기를 수정해서 돌려주시면 됩니다. cleaned dataset으로.
@@ -101,16 +99,6 @@ def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
           truncation=True,
           max_length=256,
           add_special_tokens=True,
-          )
-    else:
-      tokenized_sentences = tokenizer(
-          concat_entity,
-          cleaned_dataset, #여기를 수정해서 돌려주시면 됩니다. cleaned dataset으로.
-          return_tensors="pt",
-          padding=True,
-          truncation=True,
-          max_length=256,
-          add_special_tokens=True,
-          return_token_type_ids=False,
+          return_token_type_ids=False if 'roberta' in MODEL_NAME else True,
           )
     return tokenized_sentences
