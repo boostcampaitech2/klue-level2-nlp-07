@@ -10,7 +10,7 @@ import numpy as np
 import argparse
 from tqdm import tqdm
 
-def inference(model, tokenized_sent, device, batch_size):
+def inference(model, model_name, tokenized_sent, device, batch_size):
   """
     test dataset을 DataLoader로 만들어 준 후,
     batch_size로 나눠 model이 예측 합니다.
@@ -22,7 +22,7 @@ def inference(model, tokenized_sent, device, batch_size):
   for i, data in enumerate(tqdm(dataloader)):
     with torch.no_grad():
 
-      if model.config['model_type']!='roberta':
+      if 'roberta' not in model_name:
         outputs = model(
             input_ids=data['input_ids'].to(device),
             attention_mask=data['attention_mask'].to(device),
@@ -56,7 +56,7 @@ def num_to_label(label):
   
   return origin_label
 
-def load_test_dataset(dataset_dir, tokenizer):
+def load_test_dataset(dataset_dir, tokenizer, tokenizer_name):
   """
     test dataset을 불러온 후,
     tokenizing 합니다.
@@ -64,7 +64,7 @@ def load_test_dataset(dataset_dir, tokenizer):
   test_dataset = load_data(dataset_dir)
   test_label = list(map(int,test_dataset['label'].values))
   # tokenizing dataset
-  tokenized_test = tokenized_dataset(test_dataset, tokenizer)
+  tokenized_test = tokenized_dataset(test_dataset, tokenizer, tokenizer_name)
   return test_dataset['id'], tokenized_test, test_label
 
 def main(args):
@@ -86,11 +86,11 @@ def main(args):
 
   ## load test datset
   test_dataset_dir = "../dataset/test/test_data.csv"
-  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, MODEL_NAME)
+  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, Tokenizer_NAME)
   Re_test_dataset = RE_Dataset(test_dataset ,test_label)
 
   ## predict answer
-  pred_answer, output_prob = inference(model, Re_test_dataset, device, BSZ) # model에서 class 추론
+  pred_answer, output_prob = inference(model, Tokenizer_NAME, Re_test_dataset, device, BSZ) # model에서 class 추론
   pred_answer = num_to_label(pred_answer) # 숫자로 된 class를 원래 문자열 라벨로 변환.
   
   ## make csv file with predicted answer

@@ -40,50 +40,29 @@ def preprocessing_dataset(dataset):
 def load_data(dataset_dir):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
-  dataset = data_pruning(pd_dataset)
-  dataset = preprocessing_dataset(dataset)
-  
+  # dataset = data_pruning(pd_dataset)
+  dataset = preprocessing_dataset(pd_dataset)  
   return dataset
 
-def data_pruning(dataset,switch=True):
-    if switch:
-        from tqdm import tqdm
-        print("================================================================================")
-        print("The length of dataset before pruning is : ",len(dataset))
-        dataset = pd.DataFrame(dataset)
-        data0 = dataset.loc[dataset['label'] == 'no_relation']
-        # data1 = dataset.loc[dataset['label'] == 'org:top_members/employees']
-        # data6 = dataset.loc[dataset['label'] == 'per:employee_of']
-        others = dataset.loc[dataset['label'] != 'no_relation']
-        #& dataset['label'] != 'org:top_members/employees' & dataset['label'] != 'per:employee_of']
-        
-        for id in tqdm(range(len(data0)),desc="Pruning....."):
-            prob = random.randint(0,10)
-            if prob >= 4:
-                data0 = data0.drop(data0[data0.id == id].index)
-        dataset = pd.concat([data0,others])
-        print("The length of dataset after pruning is : ",len(dataset))
-        print("================================================================================")
 
-        return dataset
-    return dataset
-
-def clean_punc(text):
-    punct_mapping = { 'ū': 'u', 'è': 'e', 'ȳ': 'y', 'ồ': 'o', 'ề': 'e', 'â': 'a', 'æ': 'ae', 'ő': 'o', 'α':'alpha','ß':'beta', 'β':'beta', 'ヶ': 'ケ', '‘': "'", '₹': 'e', '´': "'", '°': '', '€': 'euro', '™': 'tm', '√': ' sqrt ', '×': 'x', '²': '2', '—': '-', '–': '-', '’': "'", '_': '-', '`': "'", '“': '"', '”': '"', '£': 'e', '∞': 'infinity', '÷': '/', '•': '.', 'à': 'a', '−': '-', 'Ῥ': 'Ρ', 'ầ': 'a', '́': "'", 'ò': 'o', 'Ö': 'O', 'Š': 'S', 'ệ': 'e', 'Ś': 'S', 'ē': 'e', 'ä': 'a', 'ć': 'c', 'ë': 'e', 'å': 'a', 'Ǧ': 'G', 'ạ': 'a', 'ņ': 'n', 'İ': 'I', 'ğ': 'g', 'ê': 'e', 'Č': 'C', 'ã': 'a', 'ḥ': 'h', 'ả': 'a', 'ễ': 'e', '％': '%', 'ợ': 'o', 'Ú': 'U', 'ư': 'u', 'Ž': 'Z', 'ú': 'u', 'É': 'E', 'Ó': 'O', 'ü': 'u', 'é': 'e', 'ā': 'a', 'š': 's', '𑀥': 'D', 'í': 'i', 'û': 'u', 'ý': 'y', 'ī': 'i', 'ï': 'i', 'ộ': 'o', 'ì': 'i', 'ọ': 'o', 'ş': 's', 'ó': 'o', 'ñ': 'n', 'ậ': 'a', 'Â': 'A', 'ù': 'u', 'ô': 'o', 'ố': 'o', 'Á': 'A', 'ö': 'o', 'ơ': 'o', 'ç': 'c', 'ˈ': "'", 'µ': 'μ', '／': '/', '（': '(', 'ｍ': 'm', '˘': ' ', '？': '?', 'ł': 'l', 'Đ': 'D', '：': ':', '･': ',', 'Ç': 'C', 'ı': 'i', '，': ',', '𥘺': '祉', '·': ',', '＇': "'", ' ': ' ', '）': ')', '１': '1', 'ø': 'o', '～': '~', '³': '3', '(˘ ³˘)': '', '˹': '<', '｢': '<', '｣': '>', '«': '<', '˼': '>', '»': '>'}
-
+def clean_sentence(sentence):
+    punct_mapping = {'ū': 'u', 'è': 'e', 'ȳ': 'y', 'ồ': 'o', 'ề': 'e', 'â': 'a', 'æ': 'ae', 'ő': 'o', 'α': 'alpha', 'ß': 'beta', 'β': 'beta', 'ヶ': 'ケ', '₹': 'e', '°': '', '€': 'euro', '™': 'tm', '√': ' sqrt ', '–': '-', '£': 'e', '∞': 'infinity', '÷': '/', 'à': 'a', '−': '-', 'Ῥ': 'Ρ', 'ầ': 'a', '́': "'", 'ò': 'o', 'Ö': 'O', 'Š': 'S', 'ệ': 'e', 'Ś': 'S', 'ē': 'e', 'ä': 'a', 'ć': 'c', 'ë': 'e', 'å': 'a', 'Ǧ': 'G', 'ạ': 'a', 'ņ': 'n', 'İ': 'I', 'ğ': 'g', 'ê': 'e', 'Č': 'C', 'ã': 'a', 'ḥ': 'h', 'ả': 'a', 'ễ': 'e', 'ợ': 'o', 'Ú': 'U', 'ư': 'u', 'Ž': 'Z', 'ú': 'u', 'É': 'E', 'Ó': 'O', 'ü': 'u', 'ā': 'a', 'š': 's', '𑀥': 'D', 'í': 'i', 'û': 'u', 'ý': 'y', 'ī': 'i', 'ï': 'i', 'ộ': 'o', 'ì': 'i', 'ọ': 'o', 'ş': 's', 'ó': 'o', 'ñ': 'n', 'ậ': 'a', 'Â': 'A', 'ù': 'u', 'ô': 'o', 'ố': 'o', 'Á': 'A', 'ö': 'o', 'ơ': 'o', 'ç': 'c', 'ˈ': "'", 'µ': 'μ', '／': '/', '（': '(', '˘': ' ', '？': '?', 'ł': 'l', 'Đ': 'D', '･': ',', 'Ç': 'C', 'ı': 'i', '𥘺': '祉', '＇': "'", ' ': ' ', '）': ')', '１': '1', 'ø': 'o', '～': '~', '³': '3', '(˘ ³˘)': '', '˹': '<', '«': '<', '˼': '>', '»': '>'}
+    # sub_pat='‘｢-♀▼女，◆㎜㈜+?😍●㎝『》不〔Ⅰ!〉´♡️「②＆\'=∙｣㎖㎡金•▲ｔ☆♥▷‧․ᆞ①㎏℃⑤』%Ⅱ│)○】×─✔”〕_,&｜²☞→↑【#};◇━]理＝⠀😂👉⊙`(💕👍△％《▶③é:|＜；*⑦/〈😭※~―@"—≫✨[㎎⑥㏊∼ㆍ＞－^❤ℓ：>🤣★ㅤ李<ｍ·Ⅲ＋.◈㎢■…$≪㎞‥□」🏻㎾＂④・{😆“㎥’'
     for p in punct_mapping:
-        text=re.sub(p, punct_mapping[p],text)
-    return text
+        sentence=re.sub(p, punct_mapping[p],sentence)
+    # sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥(){sub_pat}]',' ',sentence)
+    sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥()]',' ',sentence)
+    sentence = re.sub('\s+',' ',sentence)
+    sentence = re.sub('\([, ]*\)','',sentence)
+    return sentence
 
-def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
+def tokenized_dataset(dataset, tokenizer, model):
     copied_dataset = list(dataset['sentence'])
     cleaned_dataset = []
     for sentence in copied_dataset:
-        sentence = clean_punc(sentence)
-        sentence = re.sub('[\\u0250-\\u02AD\\u1200-\\u137F\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70‌​-\\uFEFF\\u0900-\\u097F\\u0400-\\u04FF\\u0370-\\u03FF\\u11000-\\u1107F]',' ',sentence)
-        sentence = re.sub('\s+',' ',sentence)
+        sentence = clean_sentence(sentence)
         cleaned_dataset.append(sentence)
-    
+        
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
     concat_entity = []
     for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
@@ -91,7 +70,7 @@ def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
       temp = e01 + '[SEP]' + e02
       concat_entity.append(temp)
 
-      tokenized_sentences = tokenizer(
+    tokenized_sentences = tokenizer(
           concat_entity,
           cleaned_dataset, #여기를 수정해서 돌려주시면 됩니다. cleaned dataset으로.
           return_tensors="pt",
@@ -99,6 +78,6 @@ def tokenized_dataset(dataset, tokenizer,MODEL_NAME):
           truncation=True,
           max_length=256,
           add_special_tokens=True,
-          return_token_type_ids=False if 'roberta' in MODEL_NAME else True,
+          return_token_type_ids=False if 'roberta' in model else True,
           )
     return tokenized_sentences
