@@ -7,6 +7,25 @@ import numpy as np
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
 from load_data import *
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import gc
+phase = 0
+def draw_confusion_matrix(pred, true):
+    global phase
+    cm = confusion_matrix(true, pred)
+    df = pd.DataFrame(cm/np.sum(cm, axis=1)[:, None],
+                index=list(range(30)), columns=list(range(30)))
+    df = df.fillna(0)  # NaN 값을 0으로 변경
+    plt.figure(figsize=(16, 16))
+    plt.tight_layout()
+    plt.suptitle(f'Confusion Matrix_{phase}')
+    sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True label")
+    plt.savefig(f"./confusion_matrix/confusion_matrix_{phase}.png")
+    plt.close('all')
 
 
 def klue_re_micro_f1(preds, labels):
@@ -40,6 +59,8 @@ def klue_re_auprc(probs, labels):
     return np.average(score) * 100.0
 
 def compute_metrics(pred):
+  global phase
+  
   """ validation을 위한 metrics function """
   labels = pred.label_ids
   preds = pred.predictions.argmax(-1)
@@ -49,7 +70,9 @@ def compute_metrics(pred):
   f1 = klue_re_micro_f1(preds, labels)
   auprc = klue_re_auprc(probs, labels)
   acc = accuracy_score(labels, preds) # 리더보드 평가에는 포함되지 않습니다.
-
+  
+  phase +=1
+  draw_confusion_matrix(preds, labels)
   return {
       'micro f1 score': f1,
       'auprc' : auprc,
@@ -66,27 +89,29 @@ def label_to_num(label):
   return num_label
 
 def train():
+  
   # load model and tokenizer
   # MODEL_NAME = "bert-base-uncased"
-  MODEL_NAME = "klue/bert-base"
+  MODEL_NAME = "klue/roberta-large"
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-
+  device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+  
   # load dataset
-  train_dataset = load_data("../dataset/train/train.csv")
-  # dev_dataset = load_data("../dataset/train/dev.csv") # validation용 데이터는 따로 만드셔야 합니다.
+  train_dataset = load_data("../dataset/train/train_0.8.csv")
+  dev_dataset = load_data("../dataset/train/eval_0.8.csv") 
+  gc.collect()
 
   train_label = label_to_num(train_dataset['label'].values)
-  # dev_label = label_to_num(dev_dataset['label'].values)
-
+  dev_label = label_to_num(dev_dataset['label'].values)
+  gc.collect()
   # tokenizing dataset
-  tokenized_train = tokenized_dataset(train_dataset, tokenizer)
-  # tokenized_dev = tokenized_dataset(dev_dataset, tokenizer)
-
+  tokenized_train = tokenized_dataset_for_train(train_dataset, tokenizer)
+  tokenized_dev = tokenized_dataset_for_dev(dev_dataset, tokenizer)
+  gc.collect()
   # make dataset for pytorch.
   RE_train_dataset = RE_Dataset(tokenized_train, train_label)
-  # RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
+  RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
 
-  device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
   print(device)
   # setting model hyperparameter
@@ -102,32 +127,33 @@ def train():
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
     output_dir='./results',          # output directory
-    save_total_limit=5,              # number of total save model.
+    save_total_limit=10,              # number of total save model.
     save_steps=500,                 # model saving step.
-    num_train_epochs=5,              # total number of training epochs
-    learning_rate=5e-5,               # learning_rate
-    per_device_train_batch_size=50,  # batch size per device during training
-    per_device_eval_batch_size=50,   # batch size for evaluation
-    warmup_steps=500,                # number of warmup steps for learning rate scheduler
+    num_train_epochs=15,              # total number of training epochs
+    learning_rate=5e-6,               # learning_rate
+    per_device_train_batch_size=32,  # batch size per device during training
+    per_device_eval_batch_size=32,   # batch size for evaluation
+    #warmup_steps=500,                # number of warmup steps for learning rate scheduler
     weight_decay=0.01,               # strength of weight decay
     logging_dir='./logs',            # directory for storing logs
-    logging_steps=100,              # log saving step.
+    logging_steps=250,              # log saving step.
     evaluation_strategy='steps', # evaluation strategy to adopt during training
                                 # `no`: No evaluation during training.
                                 # `steps`: Evaluate every `eval_steps`.
                                 # `epoch`: Evaluate every end of epoch.
     eval_steps = 500,            # evaluation step.
-    load_best_model_at_end = True 
+    load_best_model_at_end = True
   )
   trainer = Trainer(
     model=model,                         # the instantiated 🤗 Transformers model to be trained
     args=training_args,                  # training arguments, defined above
     train_dataset=RE_train_dataset,         # training dataset
-    eval_dataset=RE_train_dataset,             # evaluation dataset
+    eval_dataset=RE_dev_dataset,             # evaluation dataset
     compute_metrics=compute_metrics         # define metrics function
   )
 
   # train model
+  
   trainer.train()
   model.save_pretrained('./best_model')
 def main():
