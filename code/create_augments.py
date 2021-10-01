@@ -17,7 +17,7 @@ FILE_NAME = 'aug_ver_1.csv'
 ############################# 위에서 저장할 파일명을 .csv 형식으로 설정해주세요 ################################
 
 def right_augment(en1, en2, text):
-    if en1 not in text or en2 not in text:
+    if en1 in text and en2 in text:
         return True
     return False
 
