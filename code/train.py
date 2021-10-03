@@ -12,6 +12,7 @@ from sklearn.model_selection import StratifiedKFold
 
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
 from load_data import *
+import argparse
 
 
 def klue_re_micro_f1(preds, labels):
@@ -70,28 +71,38 @@ def label_to_num(label):
   
   return num_label
 
-def train():
+def train(args):
   # load model and tokenizer
-  # MODEL_NAME = "bert-base-uncased"
+  MODEL_NAME = args.model_name
+  EPOCHS = args.epochs
+  BATCH_SIZE = args.bsz
+  SAVE_DIR = args.save_dir
+  DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
 
-
-  MODEL_NAME = "klue/roberta-large"
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
   # load dataset
-  train_dataset = load_data("../dataset/train/train_0.8.csv")
-  dev_dataset = load_data("../dataset/train/eval_0.8.csv") # validation용 데이터는 따로 만드셔야 합니다.
+  if DEV_SET is True:
+    train_dataset = load_data("../dataset/train/train_0.8.csv")
+    dev_dataset = load_data("../dataset/train/eval_0.8.csv") # validation용 데이터는 따로 만드셔야 합니다.
 
-  train_label = label_to_num(train_dataset['label'].values)
-  dev_label = label_to_num(dev_dataset['label'].values)
+    train_label = label_to_num(train_dataset['label'].values)
+    dev_label = label_to_num(dev_dataset['label'].values)
 
-  # tokenizing dataset
-  tokenized_train = tokenized_dataset(train_dataset, tokenizer,MODEL_NAME)
-  tokenized_dev = tokenized_dataset(dev_dataset, tokenizer,MODEL_NAME)
-  
-  # make dataset for pytorch.
-  RE_train_dataset = RE_Dataset(tokenized_train, train_label)
-  RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
+    # tokenizing dataset
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME)
+    tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME)
+    
+    # make dataset for pytorch.
+    RE_train_dataset = RE_Dataset(tokenized_train, train_label)
+    RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
+
+  else:
+    train_dataset = load_data("../dataset/train/train.csv")
+    train_label = label_to_num(train_dataset['label'].values)
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME)
+    RE_train_dataset = RE_Dataset(tokenized_train, train_label)
+    RE_dev_dataset = RE_Dataset(tokenized_train, train_label)
 
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -111,17 +122,15 @@ def train():
     output_dir='./results',          # output directory
     save_total_limit=2,              # number of total save model.
     save_steps=500,                 # model saving step.
-    num_train_epochs=3,              # total number of training epochs
+    num_train_epochs=EPOCHS,              # total number of training epochs
     learning_rate=5e-5,               # learning_rate
-    per_device_train_batch_size=32,  # batch size per device during training
-    per_device_eval_batch_size=32,   # batch size for evaluation
+    per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
+    per_device_eval_batch_size=BATCH_SIZE,   # batch size for evaluation
     warmup_steps=500,                # number of warmup steps for learning rate scheduler
     weight_decay=0.01,               # strength of weight decay
     logging_dir='./logs',            # directory for storing logs
     logging_steps=100,              # log saving step.
     evaluation_strategy='steps', # evaluation strategy to adopt during training
-           # evaluation step. 500 -> 100
-
                                   # `no`: No evaluation during training.
                                   # `steps`: Evaluate every `eval_steps`.
                                   # `epoch`: Evaluate every end of epoch.
@@ -133,16 +142,27 @@ def train():
     model=model,                         # the instantiated 🤗 Transformers model to be trained
     args=training_args,                  # training arguments, defined above
     train_dataset=RE_train_dataset,         # training dataset
-    eval_dataset=RE_dev_dataset,             # evaluation dataset
+    eval_dataset=RE_dev_dataset,            # evaluation dataset
     compute_metrics=compute_metrics         # define metrics function
   )
 
   # train model
   trainer.train()
-  model.save_pretrained('./best_model')
+  save_directory = './best_model/' + SAVE_DIR
+  model.save_pretrained(save_directory)
 
-def main():
-  train()
+def main(args):
+  train(args)
 
 if __name__ == '__main__':
-  main()
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument('--model_name', type=str, default="klue/roberta-large")
+  parser.add_argument('--bsz', type=int, default=32)
+  parser.add_argument('--epochs', type=int, default=5)
+  parser.add_argument('--save_dir', type=str, default="")
+  parser.add_argument('--dev_set', type=str, default="False")
+  args = parser.parse_args()
+  
+  print(args)
+  main(args)
