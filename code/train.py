@@ -78,13 +78,14 @@ def train(args):
   BATCH_SIZE = args.bsz
   SAVE_DIR = args.save_dir
   DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
+  PREPROCESSED = False if args.preprocessed.lower() in ['false', 'f', 'no', 'none'] else True
 
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
   # load dataset
   if DEV_SET is True:
-    train_dataset = load_data("../dataset/train/train_0.8.csv")
-    dev_dataset = load_data("../dataset/train/eval_0.8.csv") # validation용 데이터는 따로 만드셔야 합니다.
+    train_dataset = load_data("../dataset/train/train_aug.csv", PREPROCESSED)
+    dev_dataset = load_data("../dataset/train/dev15.csv", PREPROCESSED) # validation용 데이터는 따로 만드셔야 합니다.
 
     train_label = label_to_num(train_dataset['label'].values)
     dev_label = label_to_num(dev_dataset['label'].values)
@@ -121,12 +122,12 @@ def train(args):
   training_args = TrainingArguments(
     output_dir='./results',          # output directory
     save_total_limit=2,              # number of total save model.
-    save_steps=500,                 # model saving step.
+    save_steps=600,                 # model saving step.
     num_train_epochs=EPOCHS,              # total number of training epochs
-    learning_rate=5e-5,               # learning_rate
+    learning_rate=3e-5,               # learning_rate
     per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
     per_device_eval_batch_size=BATCH_SIZE,   # batch size for evaluation
-    warmup_steps=500,                # number of warmup steps for learning rate scheduler
+    # warmup_steps=500,                # number of warmup steps for learning rate scheduler
     weight_decay=0.01,               # strength of weight decay
     logging_dir='./logs',            # directory for storing logs
     logging_steps=100,              # log saving step.
@@ -134,9 +135,9 @@ def train(args):
                                   # `no`: No evaluation during training.
                                   # `steps`: Evaluate every `eval_steps`.
                                   # `epoch`: Evaluate every end of epoch.
-    eval_steps = 500,            # evaluation step.
+    eval_steps = 300,           # evaluation step.
 
-    load_best_model_at_end = True 
+    load_best_model_at_end = True,
   )
   trainer = Trainer(
     model=model,                         # the instantiated 🤗 Transformers model to be trained
@@ -161,7 +162,8 @@ if __name__ == '__main__':
   parser.add_argument('--bsz', type=int, default=32)
   parser.add_argument('--epochs', type=int, default=5)
   parser.add_argument('--save_dir', type=str, default="")
-  parser.add_argument('--dev_set', type=str, default="False")
+  parser.add_argument('--dev_set', type=str, default="True")
+  parser.add_argument('--preprocessed', type=str, default="False")
   args = parser.parse_args()
   
   print(args)

@@ -37,12 +37,15 @@ def preprocessing_dataset(dataset):
   output_dataset['object_entity'] = output_dataset['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   return output_dataset
 
-def load_data(dataset_dir):
+def load_data(dataset_dir, preprocessed=False):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
   # dataset = data_pruning(pd_dataset)
-  dataset = preprocessing_dataset(pd_dataset)  
-  return dataset
+  if not preprocessed:
+    dataset = preprocessing_dataset(pd_dataset)
+    return dataset  
+  return pd_dataset
+
 
 
 def clean_sentence(sentence):
@@ -52,7 +55,7 @@ def clean_sentence(sentence):
         sentence=re.sub(p, punct_mapping[p],sentence)
     # sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥(){sub_pat}]',' ',sentence)
     sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥()]',' ',sentence)
-    sentence = re.sub('\s+',' ',sentence)
+    # sentence = re.sub('\s+',' ',sentence)
     sentence = re.sub('\([, ]*\)','',sentence)
     return sentence
 
