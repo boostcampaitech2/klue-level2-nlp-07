@@ -78,29 +78,30 @@ def train(args):
   BATCH_SIZE = args.bsz
   SAVE_DIR = args.save_dir
   DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
+  NER_TAG = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
 
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
   # load dataset
   if DEV_SET is True:
-    train_dataset = load_data("../dataset/train/train_0.8.csv")
-    dev_dataset = load_data("../dataset/train/eval_0.8.csv") # validation용 데이터는 따로 만드셔야 합니다.
+    train_dataset = load_data("../dataset/train/train_0.8.csv", NER_TAG)
+    dev_dataset = load_data("../dataset/train/eval_0.8.csv", NER_TAG) # validation용 데이터는 따로 만드셔야 합니다.
 
     train_label = label_to_num(train_dataset['label'].values)
     dev_label = label_to_num(dev_dataset['label'].values)
 
     # tokenizing dataset
-    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME)
-    tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME)
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
+    tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME, NER_TAG)
     
     # make dataset for pytorch.
     RE_train_dataset = RE_Dataset(tokenized_train, train_label)
     RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
 
   else:
-    train_dataset = load_data("../dataset/train/train.csv")
+    train_dataset = load_data("../dataset/train/train.csv", NER_TAG)
     train_label = label_to_num(train_dataset['label'].values)
-    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME)
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
     RE_train_dataset = RE_Dataset(tokenized_train, train_label)
     RE_dev_dataset = RE_Dataset(tokenized_train, train_label)
 
@@ -162,6 +163,7 @@ if __name__ == '__main__':
   parser.add_argument('--epochs', type=int, default=5)
   parser.add_argument('--save_dir', type=str, default="")
   parser.add_argument('--dev_set', type=str, default="False")
+  parser.add_argument('--ner_tag', type=str, default="False")
   args = parser.parse_args()
   
   print(args)

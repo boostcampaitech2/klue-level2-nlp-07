@@ -56,15 +56,15 @@ def num_to_label(label):
   
   return origin_label
 
-def load_test_dataset(dataset_dir, tokenizer, tokenizer_name):
+def load_test_dataset(dataset_dir, tokenizer, tokenizer_name, NER_TAG):
   """
     test dataset을 불러온 후,
     tokenizing 합니다.
   """
-  test_dataset = load_data(dataset_dir)
+  test_dataset = load_data(dataset_dir, NER_TAG)
   test_label = list(map(int,test_dataset['label'].values))
   # tokenizing dataset
-  tokenized_test = tokenized_dataset(test_dataset, tokenizer, tokenizer_name)
+  tokenized_test = tokenized_dataset(test_dataset, tokenizer, tokenizer_name, NER_TAG)
   return test_dataset['id'], tokenized_test, test_label
 
 def main(args):
@@ -76,6 +76,7 @@ def main(args):
   Tokenizer_NAME = args.tokenizer
   MODEL_NAME = "./best_model/" + args.model_dir # model dir.
   BSZ = args.bsz
+  NER_TAG = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
   
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
@@ -86,7 +87,7 @@ def main(args):
 
   ## load test datset
   test_dataset_dir = "../dataset/test/test_data.csv"
-  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, Tokenizer_NAME)
+  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, Tokenizer_NAME, NER_TAG)
   Re_test_dataset = RE_Dataset(test_dataset ,test_label)
 
   ## predict answer
@@ -108,6 +109,7 @@ if __name__ == '__main__':
   parser.add_argument('--model_dir', type=str, default=None)
   parser.add_argument('--tokenizer', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
+  parser.add_argument('--ner_tag', type=str, default="False")
   args = parser.parse_args()
   print(args)
   main(args)
