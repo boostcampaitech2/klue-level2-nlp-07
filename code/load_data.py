@@ -6,11 +6,15 @@ import re
 from collections import OrderedDict
 import random
 
+
+
 class RE_Dataset(torch.utils.data.Dataset):
   """ Dataset 구성을 위한 class."""
   def __init__(self, pair_dataset, labels):
+    
     self.pair_dataset = pair_dataset
     self.labels = labels
+    
 
   def __getitem__(self, idx):
     item = {key: val[idx].clone().detach() for key, val in self.pair_dataset.items()}
@@ -24,7 +28,9 @@ def preprocessing_dataset(dataset):
   """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
   subject_entity = []
   object_entity = []
+  
   for i,j in zip(dataset['subject_entity'], dataset['object_entity']):
+
     i = i.split("'word': ")[1].split(", 'start_idx'")[0]
     j = j.split("'word': ")[1].split(", 'start_idx'")[0]
 
@@ -114,6 +120,7 @@ def clean_sentence(sentence):
     return sentence
 
 
+
 def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
 
     if NER_tagging:
@@ -121,6 +128,7 @@ def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
     else:
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.sentence]
         
+
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
     concat_entity = []
     for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
@@ -129,6 +137,7 @@ def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
       concat_entity.append(temp)
 
     tokenized_sentences = tokenizer(
+
           concat_entity,
           cleaned_dataset, #여기를 수정해서 돌려주시면 됩니다. cleaned dataset으로.
           return_tensors="pt",
@@ -138,4 +147,5 @@ def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
           add_special_tokens=True,
           return_token_type_ids=False if 'roberta' in model else True,
           )
+
     return tokenized_sentences
