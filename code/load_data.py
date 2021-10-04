@@ -87,7 +87,7 @@ def add_ner_tagging(row):
         sent += f"@*{row.subject_ner}*" + row.subject_entity + f"@" + row.sentence[sbj_end+1:]
 
     else:  # subject가 앞에 있을 때
-        sent = row.sentence[:sbj_start] + f"@*{row.subject_ner}*" + row.subject_entity + f"@{row.subject_ner}ఢ" + row.sentence[sbj_end+1:obj_start]
+        sent = row.sentence[:sbj_start] + f"@*{row.subject_ner}*" + row.subject_entity + f"@" + row.sentence[sbj_end+1:obj_start]
         sent += f"@*{row.object_ner}*" + row.object_entity + f"@" + row.sentence[obj_end+1:]
 
     return sent
