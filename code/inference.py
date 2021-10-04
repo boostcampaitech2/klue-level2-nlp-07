@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.utils.data import DataLoader
 from load_data import *
 import pandas as pd
@@ -10,19 +10,19 @@ import numpy as np
 import argparse
 from tqdm import tqdm
 
-def inference(model, tokenized_sent, device):
+def inference(model, model_name, tokenized_sent, device, batch_size):
   """
     test dataset을 DataLoader로 만들어 준 후,
     batch_size로 나눠 model이 예측 합니다.
   """
-  dataloader = DataLoader(tokenized_sent, batch_size=32, shuffle=False)
+  dataloader = DataLoader(tokenized_sent, batch_size=batch_size, shuffle=False)
   model.eval()
   output_pred = []
   output_prob = []
   for i, data in enumerate(tqdm(dataloader)):
+    print(data, len(data), type(data))
     with torch.no_grad():
-
-      if model.config['model_type']!='roberta':
+      if 'roberta' not in model_name:
         outputs = model(
             input_ids=data['input_ids'].to(device),
             attention_mask=data['attention_mask'].to(device),
@@ -33,15 +33,16 @@ def inference(model, tokenized_sent, device):
             input_ids=data['input_ids'].to(device),
             attention_mask=data['attention_mask'].to(device),
             )
-
-    logits = outputs[0]
-    prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
+    logits = outputs[0] # 정제되지 않은 output
+    # if i == 242:
+    #   print(len(logits))
+    prob = F.softmax(logits, dim=-1).detach().cpu().numpy() # 확률값(0~1)으로 변환
     logits = logits.detach().cpu().numpy()
-    result = np.argmax(logits, axis=-1)
+    result = np.argmax(logits, axis=-1) # label 번호 얻음
 
     output_pred.append(result)
     output_prob.append(prob)
-  
+  # return array->list, (7765,), (7765, 30) # test data 7765개
   return np.concatenate(output_pred).tolist(), np.concatenate(output_prob, axis=0).tolist()
 
 def num_to_label(label):
@@ -56,15 +57,15 @@ def num_to_label(label):
   
   return origin_label
 
-def load_test_dataset(dataset_dir, tokenizer):
+def load_test_dataset(dataset_dir, tokenizer, model_name):
   """
     test dataset을 불러온 후,
     tokenizing 합니다.
   """
   test_dataset = load_data(dataset_dir)
-  test_label = list(map(int,test_dataset['label'].values))
-  # tokenizing dataset
-  tokenized_test = tokenized_dataset(test_dataset, tokenizer)
+  test_label = list(map(int,test_dataset['label'].values)) # label column -> list
+  # tokenizing dataset, return indexes, tokenized dataset, labels
+  tokenized_test = tokenized_dataset(test_dataset, tokenizer, model_name)
   return test_dataset['id'], tokenized_test, test_label
 
 def main(args):
@@ -74,23 +75,24 @@ def main(args):
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   # load tokenizer
   # Tokenizer_NAME = "klue/bert-base"
-  Tokenizer_NAME = "klue/roberta-large"
-  # Tokenizer_NAME = "xlm-roberta-base"
+  # Tokenizer_NAME = "klue/roberta-large"
+  Tokenizer_NAME = args.tokenizer
+  BSZ = args.bsz
+
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
   ## load my model
-  MODEL_NAME = args.model_dir # model dir.
   model = AutoModelForSequenceClassification.from_pretrained(args.model_dir)
   model.parameters
   model.to(device)
 
   ## load test datset
   test_dataset_dir = "../dataset/test/test_data.csv"
-  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer,MODEL_NAME)
-  Re_test_dataset = RE_Dataset(test_dataset ,test_label)
+  test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, Tokenizer_NAME)
+  Re_test_dataset = RE_Dataset(test_dataset, test_label)
 
-  ## predict answer
-  pred_answer, output_prob = inference(model, Re_test_dataset, device) # model에서 class 추론
+  ## predict answer, inference()에서 prob no relation 추가 
+  pred_answer, output_prob = inference(model, Tokenizer_NAME, Re_test_dataset, device, BSZ) # model에서 class 추론
   pred_answer = num_to_label(pred_answer) # 숫자로 된 class를 원래 문자열 라벨로 변환.
   
   ## make csv file with predicted answer
@@ -106,6 +108,8 @@ if __name__ == '__main__':
   
   # model dir
   parser.add_argument('--model_dir', type=str, default="./best_model")
+  parser.add_argument('--tokenizer', type=str, default="klue/roberta-large")
+  parser.add_argument('--bsz', type=int, default=32)
   args = parser.parse_args()
   print(args)
   main(args)
