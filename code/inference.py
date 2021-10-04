@@ -74,8 +74,7 @@ def main(args):
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   # load tokenizer
   Tokenizer_NAME = args.tokenizer
-  # MODEL_NAME = "./best_model/" + args.model_dir # model dir.
-  MODEL_NAME = "./results/" + args.model_dir # model dir.
+  MODEL_NAME = "./results/" + args.model_dir if "checkpoint" in args.model_dir else "./best_model/" + args.model_dir
   BSZ = args.bsz
   SUBMISSION = args.submission
   
@@ -115,4 +114,3 @@ if __name__ == '__main__':
   print(args)
   main(args)
   
-

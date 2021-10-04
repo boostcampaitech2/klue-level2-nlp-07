@@ -1,9 +1,11 @@
 python train.py \
     --bsz 32 \
-    --epochs 1 \
-    --save_dir my_dir \
+    --epochs 2 \
+    --save_dir eda1_1 \
     --dev_set True \
-    --preprocessed True
+    --preprocessed True \
+    --train_set train_eda.csv \
+    --save_steps 300
 
 # 실행은 터미널 창에서 sh train.sh 입력
 # loop 돌려서 아래와 같이 여러 실험 원큐에도 가능
