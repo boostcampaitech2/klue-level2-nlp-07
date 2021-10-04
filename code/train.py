@@ -4,28 +4,17 @@ import pandas as pd
 import torch
 import sklearn
 import numpy as np
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
-from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
-from load_data import *
+
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import confusion_matrix
-import gc
-phase = 0
-def draw_confusion_matrix(pred, true):
-    global phase
-    cm = confusion_matrix(true, pred)
-    df = pd.DataFrame(cm/np.sum(cm, axis=1)[:, None],
-                index=list(range(30)), columns=list(range(30)))
-    df = df.fillna(0)  # NaN 값을 0으로 변경
-    plt.figure(figsize=(16, 16))
-    plt.tight_layout()
-    plt.suptitle(f'Confusion Matrix_{phase}')
-    sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True label")
-    plt.savefig(f"./confusion_matrix/confusion_matrix_{phase}.png")
-    plt.close('all')
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, confusion_matrix
+from sklearn.model_selection import StratifiedKFold
+
+from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
+from load_data import *
+
+import argparse
+
 
 
 def klue_re_micro_f1(preds, labels):
@@ -88,29 +77,44 @@ def label_to_num(label):
   
   return num_label
 
-def train():
-  
+
+def train(args):
   # load model and tokenizer
-  # MODEL_NAME = "bert-base-uncased"
-  MODEL_NAME = "klue/roberta-large"
+  MODEL_NAME = args.model_name
+  EPOCHS = args.epochs
+  BATCH_SIZE = args.bsz
+  SAVE_DIR = args.save_dir
+  DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
+  NER_TAG = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
+
+
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   
   # load dataset
-  train_dataset = load_data("../dataset/train/train_0.8.csv")
-  dev_dataset = load_data("../dataset/train/eval_0.8.csv") 
-  gc.collect()
 
-  train_label = label_to_num(train_dataset['label'].values)
-  dev_label = label_to_num(dev_dataset['label'].values)
-  gc.collect()
-  # tokenizing dataset
-  tokenized_train = tokenized_dataset_for_train(train_dataset, tokenizer)
-  tokenized_dev = tokenized_dataset_for_dev(dev_dataset, tokenizer)
-  gc.collect()
-  # make dataset for pytorch.
-  RE_train_dataset = RE_Dataset(tokenized_train, train_label)
-  RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
+  if DEV_SET is True:
+    train_dataset = load_data("../dataset/train/train_0.8.csv", NER_TAG)
+    dev_dataset = load_data("../dataset/train/eval_0.8.csv", NER_TAG) # validation용 데이터는 따로 만드셔야 합니다.
+
+    train_label = label_to_num(train_dataset['label'].values)
+    dev_label = label_to_num(dev_dataset['label'].values)
+
+    # tokenizing dataset
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
+    tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME, NER_TAG)
+    
+    # make dataset for pytorch.
+    RE_train_dataset = RE_Dataset(tokenized_train, train_label)
+    RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
+
+  else:
+    train_dataset = load_data("../dataset/train/train.csv", NER_TAG)
+    train_label = label_to_num(train_dataset['label'].values)
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
+    RE_train_dataset = RE_Dataset(tokenized_train, train_label)
+    RE_dev_dataset = RE_Dataset(tokenized_train, train_label)
+
 
 
   print(device)
@@ -122,42 +126,62 @@ def train():
   print(model.config)
   model.parameters
   model.to(device)
-  
+    
   # 사용한 option 외에도 다양한 option들이 있습니다.
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
     output_dir='./results',          # output directory
-    save_total_limit=10,              # number of total save model.
+
+    save_total_limit=2,              # number of total save model.
     save_steps=500,                 # model saving step.
-    num_train_epochs=15,              # total number of training epochs
-    learning_rate=5e-6,               # learning_rate
-    per_device_train_batch_size=32,  # batch size per device during training
-    per_device_eval_batch_size=32,   # batch size for evaluation
-    #warmup_steps=500,                # number of warmup steps for learning rate scheduler
+    num_train_epochs=EPOCHS,              # total number of training epochs
+    learning_rate=5e-5,               # learning_rate
+    per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
+    per_device_eval_batch_size=BATCH_SIZE,   # batch size for evaluation
+    warmup_steps=500,                # number of warmup steps for learning rate scheduler
+
     weight_decay=0.01,               # strength of weight decay
     logging_dir='./logs',            # directory for storing logs
     logging_steps=250,              # log saving step.
     evaluation_strategy='steps', # evaluation strategy to adopt during training
-                                # `no`: No evaluation during training.
-                                # `steps`: Evaluate every `eval_steps`.
-                                # `epoch`: Evaluate every end of epoch.
+                                  # `no`: No evaluation during training.
+                                  # `steps`: Evaluate every `eval_steps`.
+                                  # `epoch`: Evaluate every end of epoch.
     eval_steps = 500,            # evaluation step.
-    load_best_model_at_end = True
+
+
+    load_best_model_at_end = True 
+
   )
   trainer = Trainer(
     model=model,                         # the instantiated 🤗 Transformers model to be trained
     args=training_args,                  # training arguments, defined above
     train_dataset=RE_train_dataset,         # training dataset
-    eval_dataset=RE_dev_dataset,             # evaluation dataset
+
+    eval_dataset=RE_dev_dataset,            # evaluation dataset
+
     compute_metrics=compute_metrics         # define metrics function
   )
 
   # train model
   
   trainer.train()
-  model.save_pretrained('./best_model')
-def main():
-  train()
+  save_directory = './best_model/' + SAVE_DIR
+  model.save_pretrained(save_directory)
+
+def main(args):
+  train(args)
 
 if __name__ == '__main__':
-  main()
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument('--model_name', type=str, default="klue/roberta-large")
+  parser.add_argument('--bsz', type=int, default=32)
+  parser.add_argument('--epochs', type=int, default=5)
+  parser.add_argument('--save_dir', type=str, default="")
+  parser.add_argument('--dev_set', type=str, default="False")
+  parser.add_argument('--ner_tag', type=str, default="False")
+  args = parser.parse_args()
+  
+  print(args)
+  main(args)
