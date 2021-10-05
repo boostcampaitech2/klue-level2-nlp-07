@@ -7,12 +7,12 @@ from load_data import *
 
 def google_translate(en1, en2, sent):
     translator = googletrans.Translator()
-    ja_sent = translator.translate(sent, dest='zh-cn')
-    ja_en1 = translator.translate(en1, dest='zh-cn')
-    ja_en2 = translator.translate(en2, dest='zh-cn')
-    ko_sent = translator.translate(ja_sent.text, dest='ko')
-    ko_en1 = translator.translate(ja_en1.text, dest='ko')
-    ko_en2 = translator.translate(ja_en2.text, dest='ko')
+    cn_sent = translator.translate(sent, dest='zh-cn')
+    cn_en1 = translator.translate(en1, dest='zh-cn')
+    cn_en2 = translator.translate(en2, dest='zh-cn')
+    ko_sent = translator.translate(cn_sent.text, dest='ko')
+    ko_en1 = translator.translate(cn_en1.text, dest='ko')
+    ko_en2 = translator.translate(cn_en2.text, dest='ko')
     return ko_en1.text, ko_en2.text, ko_sent.text
 
 
@@ -44,12 +44,14 @@ sentences = list(df['sentence'])
 sub_entity = [ent[1:-1] for ent in list(df['subject_entity'])]
 ob_entity = [ent[1:-1] for ent in list(df['object_entity'])]
 
-num_iter = len(sentences)//100
+### modified below ###
+SEP = 100
+num_iter = len(sentences)//SEP
 for idx in range(num_iter+1):
-    if i == num_iter:
-        subs, obs, sents = sub_entity[idx*100:(idx+1)*100], ob_entity[idx*100:(idx+1)*100], sentences[idx*100:(idx+1)*100]
+    if idx == num_iter:
+        subs, obs, sents = sub_entity[idx*SEP:(idx+1)*SEP], ob_entity[idx*SEP:(idx+1)*SEP], sentences[idx*SEP:(idx+1)*SEP]
     else:
-        subs, obs, sents = sub_entity[idx*100:], ob_entity[idx*100:], sentences[idx*100:]
+        subs, obs, sents = sub_entity[idx*SEP:], ob_entity[idx*SEP:], sentences[idx*SEP:]
     new_sub_entity, new_ob_entity, new_sentences = double_translate(subs, obs, sents)
-    new_df = pd.DataFrame({'id':df['id'][idx*100:(idx+1)*100],'sentence':new_sentences,'subject_entity':new_sub_entity,'object_entity':new_ob_entity,'label':df['label'][idx*100:(idx+1)*100],})
-    new_df.to_csv(f'../dataset/train/translate/train_trans{idx}.csv', index=False)
+    new_df = pd.DataFrame({'id':df['id'][idx*SEP:(idx+1)*SEP],'sentence':new_sentences,'subject_entity':new_sub_entity,'object_entity':new_ob_entity,'label':df['label'][idx*SEP:(idx+1)*SEP],})
+    new_df.to_csv(f'../dataset/train/translate_real/train_trans{idx}.csv', index=False)
