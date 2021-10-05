@@ -105,7 +105,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   
   # model dir
-  parser.add_argument('--model_dir', type=str, default=None)
+  parser.add_argument('--model_dir', type=str, default='')
   parser.add_argument('--tokenizer', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
   args = parser.parse_args()
