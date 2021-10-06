@@ -15,6 +15,19 @@ from load_data import *
 
 import argparse
 
+def draw_confusion_matrix(true, pred):
+    cm = confusion_matrix(true, pred)
+    df = pd.DataFrame(cm/np.sum(cm, axis=1)[:, None],
+                index=list(range(30)), columns=list(range(30)))
+    df = df.fillna(0)  # NaN 값을 0으로 변경
+    plt.figure(figsize=(16, 16))
+    plt.tight_layout()
+    plt.suptitle('Confusion Matrix')
+    sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True label")
+    plt.savefig(f"./confusion_matrixs/confusion_matrix.png")
+    plt.close('all')
 
 
 def klue_re_micro_f1(preds, labels):
