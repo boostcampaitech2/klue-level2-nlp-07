@@ -14,7 +14,7 @@
 
 # train.csv -> data에 저장 -> 
 
-from load_data import load_data, tokenized_dataset, RE_Dataset
+from load_data import load_data, preprocessing_dataset, tokenized_dataset, RE_Dataset
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments
 import torch
 import pickle
@@ -62,11 +62,15 @@ def klue_re_auprc(probs, labels):
     """KLUE-RE AUPRC"""
     labels = np.eye(2)[labels] # labels의 shape대로 eye 행렬이 채워짐
     # print(labels, labels.shape) # labels.shape = (32470, 30)
+    print(labels)
     score = np.zeros((2,))
     # print(score.shape) # (30,)
+    # print(labels.shape, score.shape) # (22936, 2), (2,)
     for c in range(2):
         targets_c = labels.take([c], axis=1).ravel() # take values along axis
         preds_c = probs.take([c], axis=1).ravel() # ravel : contiguous flattened array
+        # print(targets_c.shape, preds_c.shape) # (22936,), (22936)
+        print(targets_c, preds_c, probs.shape) # label 갯수
         precision, recall, _ = sklearn.metrics.precision_recall_curve(targets_c, preds_c)
         score[c] = sklearn.metrics.auc(recall, precision)
     return np.average(score) * 100.0
@@ -89,6 +93,8 @@ def compute_metrics(pred): # pred : 'EvalPrediction' object
   f1 = klue_re_micro_f1(preds, labels)
   auprc = klue_re_auprc(probs, labels)
   acc = accuracy_score(labels, preds) # 리더보드 평가에는 포함되지 않습니다.
+  # print(f1, auprc, acc, len(labels), preds.shape, probs.shape) # 100.0, nan, 1.0, 22936, (22936,), (22936, 2)
+  
   draw_confusion_matrix(labels, preds)
 
   return {
@@ -108,8 +114,13 @@ def train_binary_classifier(args):
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
     if DEV_SET is True:
-        train_dataset = load_data('/opt/ml/dataset/train/train_0.8.csv')
-        dev_dataset = load_data("/opt/ml/dataset/train/eval_0.2.csv")
+        # train_dataset = load_data('/opt/ml/dataset/train/train_0.8.csv')
+        # dev_dataset = load_data("/opt/ml/dataset/train/eval_0.2.csv")
+        train_dataset = pd.read_csv('/opt/ml/dataset/train/train_trans_okt.csv')
+        dev_dataset = pd.read_csv("/opt/ml/dataset/train/dev15.csv")
+
+        train_dataset = preprocessing_dataset(train_dataset)
+        # dev_dataset = preprocessing_dataset(dev_dataset)
 
         train_label = label_to_num(train_dataset['label'].values)
         dev_label = label_to_num(dev_dataset['label'].values)
@@ -127,7 +138,8 @@ def train_binary_classifier(args):
                 binary_train_label.extend([1])
             else:
                 binary_train_label.extend([0])
-
+        print(train_label)
+        print(dev_label)
         # tokenizing dataset
         tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME)
         tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME)
@@ -137,8 +149,11 @@ def train_binary_classifier(args):
         RE_dev_dataset = RE_Dataset(tokenized_dev, binary_dev_label)
     
     else:
-        train_data = load_data('/opt/ml/dataset/train/train.csv') # train.csv를 원하는 형식의 DataFrame으로 변경
+        # train_data = load_data('/opt/ml/dataset/train/train.csv') # train.csv를 원하는 형식의 DataFrame으로 변경
+        train_data = pd.read_csv('/opt/ml/dataset/train/train.csv')
+        train_data = preprocessing_dataset(train_data)
         train_label = label_to_num(train_data['label'].values)
+        
         binary_label = []
         for i in train_label:
             if i != 0:
@@ -177,7 +192,9 @@ def train_binary_classifier(args):
                                     # `steps`: Evaluate every `eval_steps`.
                                     # `epoch`: Evaluate every end of epoch.
         eval_steps = 500,            # evaluation step.
-        load_best_model_at_end = True 
+        load_best_model_at_end = True,
+        metric_for_best_model='micro f1 score',
+        greater_is_better=True, 
     )
     trainer = Trainer(
         model=model,                         # the instantiated 🤗 Transformers model to be trained

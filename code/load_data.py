@@ -87,7 +87,8 @@ def clean_punc(text):
         sentence = re.sub(p, punct_mapping[p], text) # p -> punct_mapping[p]로 replacement
         # sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥(){sub_pat}]',' ',sentence)
   
-  sentence = re.sub('\s+',' ',sentence)
+  # sentence = re.sub('\s+',' ',sentence)
+  sentence = re.sub(f"""[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥()\.,!\?'"\[\]&:%]""",' ',sentence)
   sentence = re.sub('\([, ]*\)','',sentence)
 
   return text

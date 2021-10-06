@@ -26,7 +26,7 @@ def draw_confusion_matrix(true, pred):
     sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
     plt.xlabel("Predicted Label")
     plt.ylabel("True label")
-    plt.savefig(f"./confusion_matrixs/confusion_matrix.png")
+    plt.savefig(f"/opt/ml/code/confusion_matrixs/confusion_matrix.png")
     plt.close('all')
 
 def klue_re_micro_f1(preds, labels):
@@ -65,6 +65,7 @@ def compute_metrics(pred): # pred : 'EvalPrediction' object
   labels = pred.label_ids # (32470,)
   preds = pred.predictions.argmax(-1) # (32470, 30)
   probs = pred.predictions # (32470, 30)
+  print('probs :', probs)
   # calculate accuracy using sklearn's function
   f1 = klue_re_micro_f1(preds, labels)
   auprc = klue_re_auprc(probs, labels)
@@ -79,11 +80,11 @@ def compute_metrics(pred): # pred : 'EvalPrediction' object
 
 def label_to_num(label):
   num_label = []
-  with open('dict_label_to_num.pkl', 'rb') as f:
+  with open('/opt/ml/code/dict_label_to_num.pkl', 'rb') as f:
     dict_label_to_num = pickle.load(f)
-  for v in label:
-    num_label.append(dict_label_to_num[v])
-  
+  for v in label: 
+    num_label.append(dict_label_to_num[v]-1)
+
   return num_label
 
 # roberta-large에서는 29개 클래스 데이터만 학습시키기! 
@@ -103,8 +104,8 @@ def train(args):
 
   # load dataset
   if DEV_SET is True:
-    train_dataset = load_data("../dataset/train/train_0.8.csv")
-    dev_dataset = load_data("../dataset/train/eval_0.2.csv") # validation용 데이터는 따로 만드셔야 합니다.
+    train_dataset = load_data("/opt/ml/dataset/train/train_0.8.csv")
+    dev_dataset = load_data("/opt/ml/dataset/train/eval_0.2.csv") # validation용 데이터는 따로 만드셔야 합니다.
 
     train_label = label_to_num(train_dataset['label'].values)
     dev_label = label_to_num(dev_dataset['label'].values)
@@ -118,25 +119,32 @@ def train(args):
     RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
   
   else:
-    train_dataset = load_data("../dataset/train/train.csv")
-    print(train_dataset['label'].nunique())    
+    train_dataset = load_data("/opt/ml/dataset/train/train.csv")
+    # print(train_dataset['label'].unique())    
     train_label = label_to_num(train_dataset['label'].values)
-    print(len(train_label))
+    # print(len(train_label))
 
     tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME)
     RE_train_dataset = RE_Dataset(tokenized_train, train_label)
     RE_dev_dataset = RE_Dataset(tokenized_train, train_label)
 
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
+  
   print(device)
   # setting model hyperparameter
   model_config = AutoConfig.from_pretrained(MODEL_NAME)
   model_config.num_labels = 29
-  print("=====================")
-  # model_config.id2label = {1:'LABEL_1', 2:'LABEL_2', 3:'LABEL_3', 4:'LABEL_4', 5:'LABEL_5', \
-  #  6:'LABEL_6', 7:'LABEL_7', 8:'LABEL_8', 9:'LABEL_9', 10:'LABEL_10', 11:'LABEL_11', \
-  #    12:'LABEL_12', 13:'LABEL_13', 14:'LABEL_14', 15:'LABEL_15',}
+  # print("=====================")
+  # model_config.id2label = {'1':'LABEL_1', '2':'LABEL_2', '3':'LABEL_3', '4':'LABEL_4', \
+  #   '5':'LABEL_5', '6':'LABEL_6', '7':'LABEL_7', '8':'LABEL_8', '9':'LABEL_9', \
+  #     '10':'LABEL_10', '11':'LABEL_11', '12':'LABEL_12', '13':'LABEL_13', '14':'LABEL_14', \
+  #       '15':'LABEL_15', '16':'LABEL_16', '17':'LABEL_17', '18':'LABEL_18', '19':'LABEL_19', \
+  #         '20':'LABEL_20', '21':'LABEL_21', '22':'LABEL_22', '23':'LABEL_23', \
+  #           '24':'LABEL_24', '25':'LABEL_25', '26':'LABEL_26', '27': 'LABEL_27', \
+  #             '28':'LABEL_28', '29':'LABEL_29'}
+
+  # model_config.label2id = {value:key for key, value in model_config.id2label.items()}
+
   # model_config.
   print(model_config)
 
@@ -148,7 +156,7 @@ def train(args):
   # 사용한 option 외에도 다양한 option들이 있습니다.
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
-    output_dir='./results',          # output directory
+    output_dir='/opt/ml/code/results',          # output directory
     save_total_limit=5,              # number of total save model.
     save_steps=500,                 # model saving step.
     num_train_epochs=EPOCHS,              # total number of training epochs
@@ -157,14 +165,16 @@ def train(args):
     per_device_eval_batch_size=BATCH_SIZE,   # batch size for evaluation
 #    warmup_steps=500,                # number of warmup steps for learning rate scheduler
     weight_decay=0.01,               # strength of weight decay
-    logging_dir='./logs',            # directory for storing logs
+    logging_dir='/opt/ml/code/logs',            # directory for storing logs
     logging_steps=100,              # log saving step.
     evaluation_strategy='steps', # evaluation strategy to adopt during training
                                 # `no`: No evaluation during training.
                                 # `steps`: Evaluate every `eval_steps`.
                                 # `epoch`: Evaluate every end of epoch.
     eval_steps = 500,            # evaluation step.
-    load_best_model_at_end = True 
+    load_best_model_at_end = True,
+    metric_for_best_model='micro f1 score',
+    greater_is_better=True,
   )
   
   trainer = Trainer(
@@ -177,13 +187,14 @@ def train(args):
   
   # train model
   print('Train roberta-large')
+
   trainer.train() 
   # return global_step(int), training_loss(float), metrics(Dict[str,float]) 
   model.save_pretrained(SAVE_DIR)
   
 def main(args):
   # wandb.init(project="nlp_klue")
-  # train_binary_classifier(args)
+  train_binary_classifier(args)
   train(args)
 
 if __name__ == '__main__':
@@ -191,17 +202,17 @@ if __name__ == '__main__':
 
   parser.add_argument('--model_name', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
-  parser.add_argument('--epochs', type=int, default=1)
+  parser.add_argument('--epochs', type=int, default=3)
   parser.add_argument('--learning_rate', type=float, default=3e-5)
-  parser.add_argument('--save_dir', type=str, default="./best_model/")
-  parser.add_argument('--dev_set', type=str, default="False")
+  parser.add_argument('--save_dir', type=str, default="/opt/ml/code/best_model/")
+  parser.add_argument('--dev_set', type=str, default="True")
 
   parser.add_argument('--binary_model_name', type=str, default="klue/roberta-large")
   parser.add_argument('--binary_bsz', type=int, default=32)
   parser.add_argument('--binary_epochs', type=int, default=1)
   parser.add_argument('--binary_learning_rate', type=float, default=3e-5)
-  parser.add_argument('--binary_save_dir', type=str, default="./binary_best_model/")
-  parser.add_argument('--binary_dev_set', type=str, default="False")
+  parser.add_argument('--binary_save_dir', type=str, default="/opt/ml/code/binary_best_model/")
+  parser.add_argument('--binary_dev_set', type=str, default="True")
   
   args = parser.parse_args()
 
