@@ -1,3 +1,5 @@
+#!/bin/sh
+
 python train.py \
     --bsz 32 \
     --epochs 1 \

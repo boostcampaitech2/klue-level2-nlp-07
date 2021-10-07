@@ -14,8 +14,22 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
 from load_data import *
 
 import argparse
+phase = 0
+def draw_confusion_matrix(true, pred):
+    global phase
+    cm = confusion_matrix(true, pred)
+    df = pd.DataFrame(cm/np.sum(cm, axis=1)[:, None],
+                index=list(range(30)), columns=list(range(30)))
+    df = df.fillna(0)  # NaN 값을 0으로 변경
+    plt.figure(figsize=(16, 16))
+    plt.tight_layout()
+    plt.suptitle('Confusion Matrix')
+    sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
+    plt.xlabel("Predicted Label")
 
-
+    plt.ylabel("True label")
+    plt.savefig(f"/opt/ml/klue-level2-nlp-07/code/confusion_matrix/confusion_matrix_{phase}.png")
+    plt.close('all')
 
 def klue_re_micro_f1(preds, labels):
     """KLUE-RE micro f1 (except no_relation)"""
@@ -94,8 +108,8 @@ def train(args):
   # load dataset
 
   if DEV_SET is True:
-    train_dataset = load_data("../dataset/train/train_0.8.csv", NER_TAG)
-    dev_dataset = load_data("../dataset/train/eval_0.8.csv", NER_TAG) # validation용 데이터는 따로 만드셔야 합니다.
+    train_dataset = load_data("/opt/ml/klue-level2-nlp-07/dataset/train/train_combined_point9.csv", NER_TAG)
+    dev_dataset = load_data("/opt/ml/klue-level2-nlp-07/dataset/train/eval_combined_point1.csv", NER_TAG) # validation용 데이터는 따로 만드셔야 합니다.
 
     train_label = label_to_num(train_dataset['label'].values)
     dev_label = label_to_num(dev_dataset['label'].values)
@@ -109,7 +123,7 @@ def train(args):
     RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
 
   else:
-    train_dataset = load_data("../dataset/train/train.csv", NER_TAG)
+    train_dataset = load_data("../dataset/train/combined3.csv", NER_TAG)
     train_label = label_to_num(train_dataset['label'].values)
     tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
     RE_train_dataset = RE_Dataset(tokenized_train, train_label)
@@ -133,7 +147,7 @@ def train(args):
     output_dir='./results',          # output directory
 
     save_total_limit=2,              # number of total save model.
-    save_steps=500,                 # model saving step.
+    save_steps=300,                 # model saving step.
     num_train_epochs=EPOCHS,              # total number of training epochs
     learning_rate=5e-5,               # learning_rate
     per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
@@ -142,15 +156,17 @@ def train(args):
 
     weight_decay=0.01,               # strength of weight decay
     logging_dir='./logs',            # directory for storing logs
-    logging_steps=250,              # log saving step.
+    logging_steps=150,              # log saving step.
     evaluation_strategy='steps', # evaluation strategy to adopt during training
                                   # `no`: No evaluation during training.
                                   # `steps`: Evaluate every `eval_steps`.
                                   # `epoch`: Evaluate every end of epoch.
-    eval_steps = 500,            # evaluation step.
+    eval_steps = 300,            # evaluation step.
 
 
-    load_best_model_at_end = True 
+    load_best_model_at_end = True ,
+    metric_for_best_model='micro f1 score',
+    greater_is_better=True
 
   )
   trainer = Trainer(

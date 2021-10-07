@@ -31,8 +31,8 @@ def preprocessing_dataset(dataset):
   
   for i,j in zip(dataset['subject_entity'], dataset['object_entity']):
 
-    i = i.split("'word': ")[1].split(", 'start_idx'")[0]
-    j = j.split("'word': ")[1].split(", 'start_idx'")[0]
+    #i = i.split("'word': ")[1].split(", 'start_idx'")[0]
+    #j = j.split("'word': ")[1].split(", 'start_idx'")[0]
 
     subject_entity.append(i)
     object_entity.append(j)
@@ -143,9 +143,9 @@ def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
           return_tensors="pt",
           padding=True,
           truncation=True,
-          max_length=256,
+          max_length=150,
           add_special_tokens=True,
           return_token_type_ids=False if 'roberta' in model else True,
           )
-
+    
     return tokenized_sentences
