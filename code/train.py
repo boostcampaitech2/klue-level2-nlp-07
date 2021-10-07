@@ -108,8 +108,8 @@ def train(args):
 
     
     if args.filter_no_rel:
-      train_rel_label = train_dataset['rel'].values
-      dev_rel_label = dev_dataset['rel'].values
+      train_rel_label = (train_dataset['rel']*1).values
+      dev_rel_label = (dev_dataset['rel']*1).values
       train_dataset_main=train_dataset[train_dataset['label']!='no_relation']
       dev_dataset_main=dev_dataset[dev_dataset['label']!='no_relation']
       train_label = [i-1 for i in label_to_num(train_dataset_main['label'].values)]
@@ -130,8 +130,8 @@ def train(args):
     if args.filter_no_rel:
       RE_train_rel_dataset = RE_Dataset(tokenized_train, train_rel_label)
       RE_dev_rel_dataset = RE_Dataset(tokenized_dev, dev_rel_label)
-    RE_train_dataset = RE_Dataset(tokenized_train_main, train_label,args.filter_no_rel)
-    RE_dev_dataset = RE_Dataset(tokenized_dev_main, dev_label,args.filter_no_rel)
+    RE_train_dataset = RE_Dataset(tokenized_train_main, train_label)
+    RE_dev_dataset = RE_Dataset(tokenized_dev_main, dev_label)
 
   else:
     train_dataset = load_data("../dataset/train/train.csv")
@@ -181,7 +181,9 @@ def train(args):
                                   # `epoch`: Evaluate every end of epoch.
     eval_steps = 500,            # evaluation step.
 
-    load_best_model_at_end = True 
+    load_best_model_at_end = True ,
+    metric_for_best_model = "micro f1 score",
+    greater_is_better = True,
   )
   training_args = TrainingArguments(
     output_dir='./results/sep/main',          # output directory
@@ -201,7 +203,9 @@ def train(args):
                                   # `epoch`: Evaluate every end of epoch.
     eval_steps = 500,            # evaluation step.
 
-    load_best_model_at_end = True 
+    load_best_model_at_end = True ,
+    metric_for_best_model = "micro f1 score",
+    greater_is_better = True,
   )
   trainer_rel = Trainer(
     model=model_rel,                         # the instantiated 🤗 Transformers model to be trained
@@ -222,9 +226,11 @@ def train(args):
   trainer_main.train()
   save_directory = './best_model/main' + SAVE_DIR
   model_main.save_pretrained(save_directory)
+
   trainer_rel.train()
   save_directory = './best_model/rel' + SAVE_DIR
   model_rel.save_pretrained(save_directory)
+  
 
 def main(args):
   train(args)
