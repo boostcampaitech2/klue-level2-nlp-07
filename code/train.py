@@ -124,7 +124,7 @@ def train(args):
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
     output_dir='./results',                    # output directory
-    save_total_limit=3,                        # number of total save model.
+    save_total_limit=2,                        # number of total save model.
     save_steps=SAVE_STEPS,                     # model saving step.
     num_train_epochs=EPOCHS,                   # total number of training epochs
     learning_rate=LEARNING_RATE,               # learning_rate
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
   parser.add_argument('--model_name', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
-  parser.add_argument('--epochs', type=int, default=5)
+  parser.add_argument('--epochs', type=int, default=2)
   parser.add_argument('--save_dir', type=str, default="")
   parser.add_argument('--dev_set', type=str, default="True")
   parser.add_argument('--preprocessed', type=str, default="False")

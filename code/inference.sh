@@ -1,4 +1,5 @@
 python inference.py \
-    --model_dir checkpoint-4000 \
+    --tokenizer klue/roberta-large \
+    --model_dir trans_okt \
     --bsz 32 \
-    --submission submission_4000.csv
+    --submission trans_okt.csv
