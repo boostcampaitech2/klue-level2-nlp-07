@@ -6,7 +6,10 @@ import re
 from collections import OrderedDict
 import random
 
-
+def drop_no_relation_data(dataset):
+  indexes_no_relation = dataset[dataset['label'] == 'no_relation'].index
+  dataset.drop(indexes_no_relation, inplace=True)
+  return dataset
 
 class RE_Dataset(torch.utils.data.Dataset):
   """ Dataset 구성을 위한 class."""
@@ -37,7 +40,7 @@ def preprocessing_dataset(dataset):
     subject_entity.append(i)
     object_entity.append(j)
   
-  output_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],'rel':dataset['rel']})
+  output_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
   output_dataset['sentence'] = output_dataset['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   output_dataset['subject_entity'] = output_dataset['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   output_dataset['object_entity'] = output_dataset['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
@@ -98,10 +101,13 @@ def add_ner_tagging(row):
 
     return sent
 
-def load_data(dataset_dir, NER_tagging=False):
+def load_data(dataset_dir, NER_tagging=False, Binary=False):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
-  # dataset = data_pruning(pd_dataset)
+  
+  if Binary:
+    pd_dataset = drop_no_relation_data(pd_dataset)
+  
   if NER_tagging:
     dataset = preprocessing_dataset_ner(pd_dataset)
   else:
