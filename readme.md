@@ -142,7 +142,7 @@ pip install -U deep-translator
 
 ## **Data Analysis**
 
-파일: [code/EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/EDA.ipynb), [code/concat.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/concat.ipynb), [code/cleanse.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/cleanse.ipynb), [code/preprocess_EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/preprocess_EDA.ipynb), [code/papago.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/papago.ipynb)
+파일: [code/EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/EDA.ipynb), [/concat.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/concat.ipynb), [/cleanse.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/cleanse.ipynb), [/preprocess_EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/preprocess_EDA.ipynb), [/papago.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/papago.ipynb)
 
 ## **Data preprocessing & Data Augmentation**
 
