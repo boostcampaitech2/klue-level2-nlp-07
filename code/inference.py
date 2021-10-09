@@ -86,10 +86,13 @@ def main(args):
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   # load tokenizer
   Tokenizer_NAME = args.tokenizer
+
   BINARY = args.binary
-  MODEL_NAME = "./best_model/" + args.model_dir # model dir.
+  MODEL_NAME = "./results/" + args.model_dir if "checkpoint" in args.model_dir else "./best_model/" + args.model_dir
   BSZ = args.bsz
   NER_TAG = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
+  SUBMISSION = args.submission
+
   
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
@@ -100,6 +103,7 @@ def main(args):
 
   ## load test datset
   test_dataset_dir = "../dataset/test/test_data.csv"
+
 
   if BINARY:
     test_dataframe = pd.read_csv(test_dataset_dir)
@@ -158,7 +162,8 @@ def main(args):
     # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
     output = pd.DataFrame({'id':test_id,'pred_label':pred_answer,'probs':output_prob,})
 
-    output.to_csv('./prediction/submission.csv', index=False) # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
+    submission_file = './prediction/' + SUBMISSION
+    output.to_csv(submission_file, index=False) # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
     
   #### 필수!! ##############################################
   print('---- Finish! ----')
@@ -167,11 +172,11 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   
   # model dir
-  parser.add_argument('--model_dir', type=str, default=None)
+  parser.add_argument('--model_dir', type=str, default="")
   parser.add_argument('--tokenizer', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
+  parser.add_argument('--submission', type=str, default="submission.csv")
   parser.add_argument('--ner_tag', type=str, default="False")
-  
   parser.add_argument('--binary_save_dir', type=str, default="/opt/ml/code/binary_best_model/")
   parser.add_argument('--binary_tokenizer', type=str, default="klue/roberta-large")
   parser.add_argument('--binary_bsz', type=int, default=32)

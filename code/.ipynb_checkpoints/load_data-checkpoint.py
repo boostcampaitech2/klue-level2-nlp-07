@@ -37,31 +37,43 @@ def preprocessing_dataset(dataset):
   output_dataset['object_entity'] = output_dataset['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   return output_dataset
 
-def load_data(dataset_dir):
+def load_data(dataset_dir, preprocessed=False):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
-  # dataset = data_pruning(pd_dataset)
-  dataset = preprocessing_dataset(pd_dataset)  
-  return dataset
+  if not preprocessed:
+    dataset = preprocessing_dataset(pd_dataset)
+    return dataset  
+  return pd_dataset
+
 
 
 def clean_sentence(sentence):
     punct_mapping = {'ū': 'u', 'è': 'e', 'ȳ': 'y', 'ồ': 'o', 'ề': 'e', 'â': 'a', 'æ': 'ae', 'ő': 'o', 'α': 'alpha', 'ß': 'beta', 'β': 'beta', 'ヶ': 'ケ', '₹': 'e', '°': '', '€': 'euro', '™': 'tm', '√': ' sqrt ', '–': '-', '£': 'e', '∞': 'infinity', '÷': '/', 'à': 'a', '−': '-', 'Ῥ': 'Ρ', 'ầ': 'a', '́': "'", 'ò': 'o', 'Ö': 'O', 'Š': 'S', 'ệ': 'e', 'Ś': 'S', 'ē': 'e', 'ä': 'a', 'ć': 'c', 'ë': 'e', 'å': 'a', 'Ǧ': 'G', 'ạ': 'a', 'ņ': 'n', 'İ': 'I', 'ğ': 'g', 'ê': 'e', 'Č': 'C', 'ã': 'a', 'ḥ': 'h', 'ả': 'a', 'ễ': 'e', 'ợ': 'o', 'Ú': 'U', 'ư': 'u', 'Ž': 'Z', 'ú': 'u', 'É': 'E', 'Ó': 'O', 'ü': 'u', 'ā': 'a', 'š': 's', '𑀥': 'D', 'í': 'i', 'û': 'u', 'ý': 'y', 'ī': 'i', 'ï': 'i', 'ộ': 'o', 'ì': 'i', 'ọ': 'o', 'ş': 's', 'ó': 'o', 'ñ': 'n', 'ậ': 'a', 'Â': 'A', 'ù': 'u', 'ô': 'o', 'ố': 'o', 'Á': 'A', 'ö': 'o', 'ơ': 'o', 'ç': 'c', 'ˈ': "'", 'µ': 'μ', '／': '/', '（': '(', '˘': ' ', '？': '?', 'ł': 'l', 'Đ': 'D', '･': ',', 'Ç': 'C', 'ı': 'i', '𥘺': '祉', '＇': "'", ' ': ' ', '）': ')', '１': '1', 'ø': 'o', '～': '~', '³': '3', '(˘ ³˘)': '', '˹': '<', '«': '<', '˼': '>', '»': '>'}
-    # sub_pat='‘｢-♀▼女，◆㎜㈜+?😍●㎝『》不〔Ⅰ!〉´♡️「②＆\'=∙｣㎖㎡金•▲ｔ☆♥▷‧․ᆞ①㎏℃⑤』%Ⅱ│)○】×─✔”〕_,&｜²☞→↑【#};◇━]理＝⠀😂👉⊙`(💕👍△％《▶③é:|＜；*⑦/〈😭※~―@"—≫✨[㎎⑥㏊∼ㆍ＞－^❤ℓ：>🤣★ㅤ李<ｍ·Ⅲ＋.◈㎢■…$≪㎞‥□」🏻㎾＂④・{😆“㎥’'
+    # sub_pat='‘｢-♀▼女，◆㎜㈜+?😍●㎝『》不〔Ⅰ!〉´♡️「②＆\'=∙｣㎖㎡金•▲ｔ☆♥▷‧․ᆞ①㎏℃⑤』%Ⅱ│)○】×─✔”〕_,&｜²☞→↑【#};◇━]理＝⠀😂👉⊙`(💕👍△％《▶③é:|＜；*⑦/〈😭※~―@"—≫✨[㎎⑥㏊∼ㆍ＞－^❤ℓ：>🤣★ㅤ李<ｍ·Ⅲ＋.◈㎢■…$≪㎞‥□」🏻㎾＂④・{😆“㎥’' 
     for p in punct_mapping:
         sentence=re.sub(p, punct_mapping[p],sentence)
     # sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥(){sub_pat}]',' ',sentence)
-    sentence = re.sub(f'[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥()]',' ',sentence)
-    sentence = re.sub('\s+',' ',sentence)
+    sentence = re.sub(f"""[^- ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Zぁ-ゔァ-ヴー々〆〤一-龥()\.,!\?'"\[\]&:%]""",' ',sentence)
     sentence = re.sub('\([, ]*\)','',sentence)
     return sentence
 
-def tokenized_dataset(dataset, tokenizer, model):
+def ner_tagging(sent, ent1, ent2):
+    sent = sent.replace(ent1[1:-1], ' ★ ' + ent1[1:-1] + ' ★ ')
+    sent = sent.replace(ent2[1:-1], ' ☆ ' + ent2[1:-1] + ' ☆ ')
+    return sent
+
+def tokenized_dataset(dataset, tokenizer, model, insert_ner=False):
     copied_dataset = list(dataset['sentence'])
+    if insert_ner:
+      copied_subject = [ent[1:-1] for ent in list(dataset['subject_entity'])]
+      copied_object = [ent[1:-1] for ent in list(dataset['object_entity'])]
+
     cleaned_dataset = []
-    for sentence in copied_dataset:
-        sentence = clean_sentence(sentence)
-        cleaned_dataset.append(sentence)
+    for i, sentence in enumerate(copied_dataset):
+      sentence = clean_sentence(sentence)
+      if insert_ner:
+        sentence = ner_tagging(sentence, copied_subject[i], copied_object[i])
+      cleaned_dataset.append(sentence)
         
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
     concat_entity = []
@@ -78,7 +90,6 @@ def tokenized_dataset(dataset, tokenizer, model):
           truncation=True,
           max_length=256,
           add_special_tokens=True,
-          # return_token_type_ids=False if 'roberta' in model else True,
-          return_token_type_ids=False,
+          return_token_type_ids=False if 'roberta' in model else True,
           )
     return tokenized_sentences
