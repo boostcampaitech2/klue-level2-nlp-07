@@ -3,12 +3,12 @@
 
 ## **개요**
 
-1. Introduction
-2. Project Outline
-3. Solution
-4. How to Use
+1. [Introduction](#introduction)
+2. [Project Outline](#project-outline)
+3. [Solution](#solution)
+4. [How to Use](#how-to-use)
 
-# 1. Introduction  
+# Introduction  
 <br/>
 <p align="center">
    <img src="./_img/AI_Tech_head.png" style="width:350px; height:70px;" />
@@ -49,13 +49,10 @@ Introduction
 
 <br/>
 
-# 2. Project Outline  
-
-![competition_title](./_img/competition_title.png)
-
+# Project Outline  
 <p align="center">
-   <img src="./_img/mask_sample.png" width="300" height="300">
-   <img src="./_img/class.png" width="300" height="300">
+   <img src="https://user-images.githubusercontent.com/43575986/136648106-87ba583b-61ba-43a0-a05e-95bf8a0c8d8d.png" width="500" height="300">
+   <img src="https://user-images.githubusercontent.com/43575986/136648152-16d3caa3-323e-4240-8e6c-a9cd6c6279d7.png" width="500" height="300">
 </p>
 
 - Task : 문장 내 개체간 관계 추출 (Relation Extraction)
@@ -78,7 +75,7 @@ AI stage에서 제공한 server, GPU
 
 - GPU: V100
 - 
-# 3. Solution
+# Solution
 
 ### KEY POINT
 
@@ -104,7 +101,7 @@ AI stage에서 제공한 server, GPU
 - [ ]  Custom Loss (Focal Loss + Label Smoothing)
 - [ ]  Stratified k-fold cross validation
 
-# 4. How to Use
+# How to Use
 
 ## **Installation**
 
