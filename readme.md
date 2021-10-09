@@ -92,18 +92,18 @@
 ### Evaluation  
 
 단일 모델의 Evaluation 결과는 아래와 같습니다.  
+아래 모든 모델은 특수문자를 제거한 (`special character removal`) 데이터 전처리 과정을 거친 후 학습이 진행되었습니다. 
 
 | Method | Micro F1-score |
 | --- | --- |
-| `KLUE/BERT-base` +  `clean_punc` | 67.602 |
-| `KLUE/RoBERTa-base` + `clean_punc` | 68.064 |
-| `kykim/bert-kor-base` + `clean_punc` | 68.9 |
-| `KLUE/RoBERTa-large` + `clean_punc` | 71.167 |
-| `KLUE/BERT-base` + NER Marker(w/adding special_token) | 63.713 |
-| `KLUE/RoBERTa-large` + `clean_punc` + NER Marker(w/adding special_token) | 69.615 |
-| `KLUE/RoBERTa-large` + `clean_punc` + NER Marker(w/o adding special_token) | 70.444 |
-| `KLUE/RoBERTa-large` + `clean_punc` + Entity Marker | 68.617 |
-| `KLUE/RoBERTa-large` + `clean_punc` + NER Marker + Data Augmentation(`EntitySwap`) | 69.646 |
+| `KLUE/BERT-base` | 67.602 |
+| `KLUE/RoBERTa-base` | 68.064 |
+| `kykim/bert-kor-base` | 68.9 |
+| `KLUE/RoBERTa-large` | 71.167 |
+| `KLUE/RoBERTa-large` + NER Marker(w/adding special_token) | 69.615 |
+| `KLUE/RoBERTa-large` + NER Marker(w/o adding special_token) | 70.444 |
+| `KLUE/RoBERTa-large` + Entity Marker | 68.617 |
+| `KLUE/RoBERTa-large` + NER Marker + Data Augmentation(`EntitySwap`) | 69.646 |
 | `XLM-RoBERTa-large` + Data Augmentation (`EDA`:Original=1:1) | 68.994 |
 | `KLUE/RoBERTa-large` + Data Augmentation (`RandomDeletion`:Original=1:1) | 71.167 |
 | `KLUE/RoBERTa-large` + Data Augmentation (`EDA`:Original=1:1) | 72.862 |
