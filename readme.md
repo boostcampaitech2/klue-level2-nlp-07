@@ -35,13 +35,13 @@
 `전미원` &nbsp; Data Visualization • Modeling • Binary classifier experiment • Ensemble  
 `정두해` &nbsp; EDA • Data Augmentation(`EDA` • `AEDA` • `RandomDeletion` • `BackTranslation`) • Code Abstraction  
 
-[image1]: ./_img/김보성.jpg
+[image1]: https://avatars.githubusercontent.com/u/56079922?v=4
 [image2]: ./_img/김지후.png
-[image3]: ./_img/김혜수.jpg
-[image4]: ./_img/박이삭.png
-[image5]: ./_img/이다곤.png
-[image6]: ./_img/전미원.jpg
-[image7]: ./_img/정두해.jpg
+[image3]: https://files.slack.com/files-pri/T027SHH7RT3-F02HXS8M4MN/_______________________________2021-10-09______________4.36.57.png
+[image4]: https://avatars.githubusercontent.com/u/80071163?v=4
+[image5]: https://files.slack.com/files-pri/T027SHH7RT3-F02HXS8M4MN/_______________________________2021-10-09______________4.36.57.png
+[image6]: https://files.slack.com/files-pri/T027SHH7RT3-F02H872JCR1/20211009_163158.jpg
+[image7]: https://files.slack.com/files-pri/T027SHH7RT3-F02H1EPS2DU/image.png
 
 <br/>
 
