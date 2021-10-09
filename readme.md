@@ -159,19 +159,19 @@ $python __main__.py -m {module} -s {script} -c {config}
 
 ### 🔅 Contribution
 
-`**김보성`** Modeling, Preprocessing(Data pruning, special character removals), Ensemble(Weighted Vote), Github management
+`김보성` Modeling, Preprocessing(Data pruning, special character removals), Ensemble(Weighted Vote), Github management
 
-`**김지후`** EDA, Data Augmentation(`EDA`, `BackTranslation`), Binary classifier experiment
+`김지후` EDA, Data Augmentation(`EDA`, `BackTranslation`), Binary classifier experiment
 
-`**김혜수`** Preprocessing (NER Marker), Data Augmentation(Entity Swap augmentation)
+`김혜수` Preprocessing (NER Marker), Data Augmentation(Entity Swap augmentation)
 
-`**박이삭`** Preprocessing(`clean punctuation`, `special character removal`), Binary classifier experiment
+`박이삭` Preprocessing(`clean punctuation`, `special character removal`), Binary classifier experiment
 
-`**이다곤`** Custom Token Addition, Model Embedding Size Modification, Vocab Modification, Tokenizer Experiment
+`이다곤` Custom Token Addition, Model Embedding Size Modification, Vocab Modification, Tokenizer Experiment
 
-`**전미원`** Data Visualization(confusion matrix), Modeling, Binary classifier experiment, Ensemble
+`전미원` Data Visualization(confusion matrix), Modeling, Binary classifier experiment, Ensemble
 
-`**정두해`** Data Augmentation(`EDA`, `AEDA`, `RandomDeletion`, `BackTranslation`), Code Abstraction
+`정두해` Data Augmentation(`EDA`, `AEDA`, `RandomDeletion`, `BackTranslation`), Code Abstraction
 
 # 2. Project Outline
 
@@ -183,7 +183,7 @@ $python __main__.py -m {module} -s {script} -c {config}
 
 ### 🏆 Final Score
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b145ae2e-d5ee-439b-ad45-3d65cea38cf8/Untitled.png)
+![Untitled](![1](https://user-images.githubusercontent.com/43575986/136647495-9a71e54e-c11e-4a27-9932-52629d3e4c39.png))
 
 대회 사이트 : [AI stage](https://stages.ai/competitions/75/overview/description)
 
