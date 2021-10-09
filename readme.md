@@ -6,7 +6,7 @@
 3. [Solution](#solution)
 4. [How to Use](#how-to-use)
 
-# Introduction  
+# 1. Introduction  
 <br/>
 <p align="center">
    <img src="https://user-images.githubusercontent.com/62708568/136650411-a9923f11-eb89-4832-8c86-89ee48c62f69.png" style="width:800px;"/>
@@ -42,7 +42,7 @@
 
 <br/>
 
-# Project Outline  
+# 2. Project Outline  
 <p align="center">
    <img src="https://user-images.githubusercontent.com/43575986/136648106-87ba583b-61ba-43a0-a05e-95bf8a0c8d8d.png" width="500" height="300">
    <img src="https://user-images.githubusercontent.com/43575986/136648152-16d3caa3-323e-4240-8e6c-a9cd6c6279d7.png" width="500" height="300">
@@ -63,7 +63,7 @@
 <br/>
 
 
-# Solution
+# 3. Solution
 
 ### KEY POINT
 
@@ -89,10 +89,7 @@
 - [ ]  Customize Loss (Focal Loss + Label Smoothing)
 - [ ]  Stratified k-fold cross validation
 
-# How to Use
-## **Hardware**
-AI stage에서 제공한 server, GPU
-- GPU: V100
+# 4. How to Use  
 
 ## **Installation**
 
@@ -149,6 +146,9 @@ Google deep_translator 모듈
 - `code` 파일 안에는 각각 **data preprocessing** • **train** • **inference**가 가능한 라이브러리가 들어있습니다
 - 사용자는 전체 코드를 내려받은 후, argument 옵션을 지정하여 개별 라이브러리 모델을 활용할 수 있습니다
 
+## **Hardware**
+본 Repository는 AI stage에서 제공한 server, GPU를 기반으로 작성된 코드입니다.
+- GPU: V100
 
 
 
