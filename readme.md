@@ -105,12 +105,12 @@ AI stage에서 제공한 server, GPU
 
 KoEDA 모듈
 
-`pip install koeda`
-`apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl`
-`python3 -m pip install --upgrade pip`
-`python3 -m pip install konlpy`
-`apt-get install curl git`
-`bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)`
+`pip install koeda`  
+`apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl`  
+`python3 -m pip install --upgrade pip`  
+`python3 -m pip install konlpy`  
+`apt-get install curl git`  
+`bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)`  
 
 Google deep_translator 모듈
 
