@@ -88,6 +88,27 @@
 - [ ]  Customize Model Architecture
 - [ ]  Customize Loss (Focal Loss + Label Smoothing)
 - [ ]  Stratified k-fold cross validation
+  
+### Evaluation  
+
+단일 모델의 Evaluation 결과는 아래와 같습니다.  
+
+| Method | Micro F1-score |
+| --- | --- |
+| `KLUE/BERT-base` +  `clean_punc` | 67.602 |
+| `KLUE/RoBERTa-base` + `clean_punc` | 68.064 |
+| `kykim/bert-kor-base` + `clean_punc` | 68.9 |
+| `KLUE/RoBERTa-large` + `clean_punc` | 71.167 |
+| `KLUE/BERT-base` + NER Marker(w/adding special_token) | 63.713 |
+| `KLUE/RoBERTa-large` + `clean_punc` + NER Marker(w/adding special_token) | 69.615 |
+| `KLUE/RoBERTa-large` + `clean_punc` + NER Marker(w/o adding special_token) | 70.444 |
+| `KLUE/RoBERTa-large` + `clean_punc` + Entity Marker | 68.617 |
+| `KLUE/RoBERTa-large` + `clean_punc` + NER Marker + Data Augmentation(`EntitySwap`) | 69.646 |
+| `XLM-RoBERTa-large` + Data Augmentation (`EDA`:Original=1:1) | 68.994 |
+| `KLUE/RoBERTa-large` + Data Augmentation (`RandomDeletion`:Original=1:1) | 71.167 |
+| `KLUE/RoBERTa-large` + Data Augmentation (`EDA`:Original=1:1) | 72.862 |
+| `KLUE/RoBERTa-large` + Data Augmentation (`BackTranslation`:Original=1:1) | 72.969 |
+| `KLUE/RoBERTa-large` + binary classifier + Data Augmentation (`BackTranslation`:Original=1:1) | 70.731 |
 
 # 4. How to Use  
 
@@ -119,11 +140,12 @@ pip install -U deep-translator
 
 ## **Data Analysis**
 
-파일: code/EDA.ipynb/concat.ipynb/cleanse.ipynb/preprocess_EDA.ipynb/translate.ipynb/papago.ipynb
+파일: code/EDA.ipynb,/concat.ipynb/cleanse.ipynb/preprocess_EDA.ipynb/translate.ipynb/papago.ipynb  
+[code/EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/EDA.ipynb), [code/concat.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/concat.ipynb), [code/cleanse.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/cleanse.ipynb), [code/preprocess_EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/preprocess_EDA.ipynb), [code/papago.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/papago.ipynb)
 
-## **Data preprocessing**
+## **Data preprocessing & Data Augmentation**
 
-파일: [code/preprocess_EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/preprocess_EDA.ipynb), [translate.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/translate.py), [translate_entity.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/translate_entity.py), [create_augments.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/create_augments.py)
+파일: [code/preprocess_EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/preprocess_EDA.ipynb), [translate.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/translate.py), [translate_entity.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/translate_entity.py), [create_augments.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/create_augments.py), [create_entityswap_augments.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/create_entityswap_augments.py), 
 
 ## **Modeling**
 
