@@ -56,7 +56,7 @@
 
 
 ### 🏆 Final Score
-![1](https://user-images.githubusercontent.com/43575986/136647495-9a71e54e-c11e-4a27-9932-52629d3e4c39.png)
+![1](https://user-images.githubusercontent.com/62708568/136651953-f4c13acb-0736-4f8b-8530-b7ab2d309dd3.JPG)
 
 대회 사이트 : [AI stage](https://stages.ai/competitions/75/overview/description)
 
@@ -94,8 +94,9 @@
 ## **Installation**
 
 다음과 같은 명령어로 필요한 libraries를 다운 받습니다.
-
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```  
 
 KoEDA 모듈
 ```
@@ -108,9 +109,10 @@ bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/me
 ```  
 
 Google deep_translator 모듈
-
-`pip install -U deep-translator`
-
+```
+pip install -U deep-translator
+```  
+  
 ## **Dataset**
 
 파일: dataset/train/train.csv, dataset/test/test_data.csv
