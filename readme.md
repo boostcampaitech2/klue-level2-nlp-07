@@ -68,12 +68,12 @@
 ### KEY POINT
 
 - No-relation의 데이터가 상대적으로 많았습니다.
-- No-relation(label:0)과 Have-relation(label:1~29) 데이터 간의 분포 차이도 컸습니다
+- No-relation(label:0)과 Have-relation(label:1~29) 데이터 간의 분포 차이도 컸습니다.
     - 이를 해결하기 위해 둘을 분류하는 binary classifier model을 구현했습니다.
 - 데이터 불균형 문제가 심각하여 Data augmentation에 대한 중요도가 크다고 판단했습니다.
     - Back translation
     - `EDA` `AEDA` `RandomDeletion`
-    - 대칭성이 있는 relation의 경우 subject, object entity swap
+    - 대칭성이 있는 relation의 경우 subject, object `EntitySwap`
 - Relation Extraction Task를 잘 수행하기 위한 fine-tuning 기법으로 데이터에 NER marker를 추가했습니다.
 - Weighted ensemble을 통한 성능 향상을 기대했습니다.
 
