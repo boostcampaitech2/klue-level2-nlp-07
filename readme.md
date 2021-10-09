@@ -40,7 +40,7 @@
 [image3]: https://user-images.githubusercontent.com/62708568/136649446-5228dfa6-e4f6-4954-b702-a57afc12ae3c.png
 [image4]: https://avatars.githubusercontent.com/u/80071163?v=4
 [image5]: https://user-images.githubusercontent.com/62708568/136649700-8bf58272-8263-4d5e-ad5c-334b5d5ebeee.png
-[image6]: https://user-images.githubusercontent.com/62708568/136649705-69c9d2b7-fa25-4a6e-97dc-78b11fabfc66.pn
+[image6]: https://user-images.githubusercontent.com/62708568/136649705-69c9d2b7-fa25-4a6e-97dc-78b11fabfc66.png
 [image7]: https://user-images.githubusercontent.com/62708568/136649705-69c9d2b7-fa25-4a6e-97dc-78b11fabfc66.png
 
 <br/>
