@@ -107,8 +107,8 @@
 | `XLM-RoBERTa-large` + Data Augmentation (`EDA`:Original=1:1) | 68.994 |
 | `KLUE/RoBERTa-large` + Data Augmentation (`RandomDeletion`:Original=1:1) | 71.167 |
 | `KLUE/RoBERTa-large` + Data Augmentation (`EDA`:Original=1:1) | 72.862 |
-| `KLUE/RoBERTa-large` + Data Augmentation (`BackTranslation`:Original=1:1) | 72.969 |
 | `KLUE/RoBERTa-large` + binary classifier + Data Augmentation (`BackTranslation`:Original=1:1) | 70.731 |
+| `KLUE/RoBERTa-large` + Data Augmentation (`BackTranslation`:Original=1:1) | 72.969 |
 
 # 4. How to Use  
 
