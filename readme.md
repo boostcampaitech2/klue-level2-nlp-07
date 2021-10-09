@@ -9,10 +9,7 @@
 # Introduction  
 <br/>
 <p align="center">
-   <img src="./_img/AI_Tech_head.png" style="width:350px; height:70px;" />
-</p>
-<p align="center">
-   <img src="./_img/value_boostcamp.png" style="width:800px; height:240px;" />
+   <img src="https://user-images.githubusercontent.com/62708568/136650411-a9923f11-eb89-4832-8c86-89ee48c62f69.png"/>
 </p>
 
 <br/>
