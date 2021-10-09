@@ -37,11 +37,11 @@
 
 [image1]: https://avatars.githubusercontent.com/u/56079922?v=4
 [image2]: ./_img/김지후.png
-[image3]: https://files.slack.com/files-pri/T027SHH7RT3-F02HXS8M4MN/_______________________________2021-10-09______________4.36.57.png
+[image3]: https://user-images.githubusercontent.com/62708568/136649446-5228dfa6-e4f6-4954-b702-a57afc12ae3c.png
 [image4]: https://avatars.githubusercontent.com/u/80071163?v=4
-[image5]: https://files.slack.com/files-pri/T027SHH7RT3-F02HXS8M4MN/_______________________________2021-10-09______________4.36.57.png
-[image6]: https://files.slack.com/files-pri/T027SHH7RT3-F02H872JCR1/20211009_163158.jpg
-[image7]: https://files.slack.com/files-pri/T027SHH7RT3-F02H1EPS2DU/image.png
+[image5]: https://user-images.githubusercontent.com/62708568/136649700-8bf58272-8263-4d5e-ad5c-334b5d5ebeee.png
+[image6]: https://user-images.githubusercontent.com/62708568/136649705-69c9d2b7-fa25-4a6e-97dc-78b11fabfc66.pn
+[image7]: https://user-images.githubusercontent.com/62708568/136649705-69c9d2b7-fa25-4a6e-97dc-78b11fabfc66.png
 
 <br/>
 
