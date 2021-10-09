@@ -119,7 +119,7 @@ def train(args):
   LEARNING_RATE = args.learning_rate
   SAVE_DIR = args.save_dir
   DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
-  NER_MARKER = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
+  NER_MARKER = False if args.ner_marker.lower() in ['false', 'f', 'no', 'none'] else True
   PREPROCESSED = False if args.preprocessed.lower() in ['false', 'f', 'no', 'none'] else True
   phase = 0
   
@@ -211,7 +211,7 @@ if __name__ == '__main__':
   parser.add_argument('--epochs', type=int, default=5)
   parser.add_argument('--save_dir', type=str, default="")
   parser.add_argument('--dev_set', type=str, default="False")
-  parser.add_argument('--ner_tag', type=str, default="False")
+  parser.add_argument('--ner_marker', type=str, default="False")
   parser.add_argument('--learning_rate', type=float, default=3e-5)
   parser.add_argument('--preprocessed', type=str, default="False")
 
