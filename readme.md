@@ -76,17 +76,17 @@
 
 ### Checklist
 
-- [x]  EDA
-- [x]  Data Visualization (`Confusion matrix`)
+- [x]  Exploratory Data Analysis
+- [x]  Data Visualization
 - [x]  Data Preprocessing(`special character removal`)
 - [x]  Inserting NER Marker
-- [x]  Transformer based model (`BERT`, `RoBERTa`)
+- [x]  Transformer based model (`BERT`, `klue/RoBERTa` `XLM-RoBERTa`)
 - [x]  Data Augmentation(`Back Translation`, `EDA`, `AEDA`, `Entity-Swap`)
 - [x]  Model with binary classifier
 - [x]  Ensemble(weighted voting)
 - [x]  Experimental Logging (`WandB`, `tensorboard`)
-- [ ]  Custom Model Architecture
-- [ ]  Custom Loss (Focal Loss + Label Smoothing)
+- [ ]  Customize Model Architecture
+- [ ]  Customize Loss (Focal Loss + Label Smoothing)
 - [ ]  Stratified k-fold cross validation
 
 # How to Use
@@ -101,13 +101,14 @@ AI stage에서 제공한 server, GPU
 `pip install -r requirements.txt`
 
 KoEDA 모듈
-
-`pip install koeda`  
-`apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl`  
-`python3 -m pip install --upgrade pip`  
-`python3 -m pip install konlpy`  
-`apt-get install curl git`  
-`bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)`  
+```
+pip install koeda  
+apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl  
+python3 -m pip install --upgrade pip  
+python3 -m pip install konlpy  
+apt-get install curl git  
+bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)  
+```  
 
 Google deep_translator 모듈
 
