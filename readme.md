@@ -1,6 +1,4 @@
 # Boostcamp Relation Extraction Competition
-## ☕ 조지KLUE니 
-
 ## **개요**
 
 1. [Introduction](#introduction)
@@ -17,8 +15,6 @@
    <img src="./_img/value_boostcamp.png" style="width:800px; height:240px;" />
 </p>
 
-Introduction
-  
 <br/>
 
 
@@ -69,12 +65,7 @@ Introduction
 
 <br/>
 
-## **Hardware**
 
-AI stage에서 제공한 server, GPU
-
-- GPU: V100
-- 
 # Solution
 
 ### KEY POINT
@@ -102,6 +93,9 @@ AI stage에서 제공한 server, GPU
 - [ ]  Stratified k-fold cross validation
 
 # How to Use
+## **Hardware**
+AI stage에서 제공한 server, GPU
+- GPU: V100
 
 ## **Installation**
 
@@ -149,7 +143,7 @@ Google deep_translator 모듈
 ├──klue-level2-nlp-07
 |    ├──code/
 |    ├──dataset
-│        ├── eval
+│        ├── test
 │        ├── train
 
 ```
