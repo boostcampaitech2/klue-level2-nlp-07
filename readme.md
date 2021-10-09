@@ -122,7 +122,7 @@ Google deep_translator 모듈
 
 ## **Data Analysis**
 
-파일: code/EDA/concat/cleanse/preprocess_EDA/translate/papago.ipynb
+파일: code/EDA.ipynb/concat.ipynb/cleanse.ipynb/preprocess_EDA.ipynb/translate.ipynb/papago.ipynb
 
 ## **Data preprocessing**
 
