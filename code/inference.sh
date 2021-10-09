@@ -1,3 +1,5 @@
 python inference.py \
-    --model_dir my_dir \
-    --bsz 16
+    --tokenizer klue/roberta-large \
+    --model_dir trans_okt \
+    --bsz 32 \
+    --submission trans_okt.csv

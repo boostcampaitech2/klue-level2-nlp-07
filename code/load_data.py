@@ -46,6 +46,7 @@ def preprocessing_dataset(dataset):
   output_dataset['object_entity'] = output_dataset['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   return output_dataset
 
+
 def preprocessing_dataset_ner(dataset):
   """
     처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다.
@@ -71,7 +72,8 @@ def preprocessing_dataset_ner(dataset):
                               'subject_ner':subject_ner,'object_entity':object_entity,'object_ner':object_ner,
                               'label':dataset['label']})
 
-  out_dataset['ner_tagged_sent'] = [add_ner_marker(row) for idx, row in out_dataset.iterrows()]
+  out_dataset['ner_
+              ged_sent'] = [add_ner_marker(row) for idx, row in out_dataset.iterrows()]
 
   out_dataset['sentence'] = out_dataset['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   out_dataset['subject_entity'] = out_dataset['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
@@ -95,19 +97,21 @@ def add_ner_marker(row):
 def load_data(dataset_dir, preprocessed=False, NER_marker=False, Binary=False):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
-  if preprocessed:
-        return pd_dataset
+ 
   if Binary:
     pd_dataset = drop_no_relation_data(pd_dataset)
-  
-  if NER_marker:
+  if preprocessed:
+    return pd_dataset
+  elif NER_marker:
     dataset = preprocessing_dataset_ner(pd_dataset)
   else:
     dataset = preprocessing_dataset(pd_dataset)  
   return dataset
 
 
+
 def clean_sentence(sentence):
+
     punct_mapping = {'ū': 'u', 'è': 'e', 'ȳ': 'y', 'ồ': 'o', 'ề': 'e', 'â': 'a', 'æ': 'ae', 'ő': 'o', 'α': 'alpha', 'ß': 'ss', 'β': 'beta', 'ヶ': 'ケ', '₹': 'e', '°': '', '€': 'euro', '™': 'tm', '√': ' sqrt ', '–': '-', '£': 'e', '∞': 'infinity', '÷': '/', 'à': 'a', '−': '-', 'Ῥ': 'Ρ', 'ầ': 'a', '́': "'", 'ò': 'o', 'Ö': 'O', 'Š': 'S', 'ệ': 'e', 'Ś': 'S', 'ē': 'e', 'ä': 'a', 'ć': 'c', 'ë': 'e', 'å': 'a', 'Ǧ': 'G', 'ạ': 'a', 'ņ': 'n', 'İ': 'I', 'ğ': 'g', 'ê': 'e', 'Č': 'C', 'ã': 'a', 'ḥ': 'h', 'ả': 'a', 'ễ': 'e', 'ợ': 'o', 'Ú': 'U', 'ư': 'u', 'Ž': 'Z', 'ú': 'u', 'É': 'E', 'Ó': 'O', 'ü': 'u', 'ā': 'a', 'š': 's', '𑀥': 'D', 'í': 'i', 'û': 'u', 'ý': 'y', 'ī': 'i', 'ï': 'i', 'ộ': 'o', 'ì': 'i', 'ọ': 'o', 'ş': 's', 'ó': 'o', 'ñ': 'n', 'ậ': 'a', 'Â': 'A', 'ù': 'u', 'ô': 'o', 'ố': 'o', 'Á': 'A', 'ö': 'o', 'ơ': 'o', 'ç': 'c', 'ˈ': "'", 'µ': 'μ', '／': '/', '（': '(', '˘': ' ', '？': '?', 'ł': 'l', 'Đ': 'D', '･': ',', 'Ç': 'C', 'ı': 'i', '𥘺': '祉', '＇': "'", ' ': ' ', '）': ')', '１': '1', 'ø': 'o', '～': '~', '³': '3', '(˘ ³˘)': '', '˹': '<', '«': '<', '˼': '>', '»': '>'}
     sub_pat='‘｢♀▼女，◆㎜㈜+?😍●㎝『》不〔Ⅰ!〉´♡️「②＆\'=∙｣㎖㎡金•▲ｔ☆♥▷‧․ᆞ①㎏℃⑤』%Ⅱ│○】×─✔”〕_,&｜²☞→↑【#};◇━]理＝⠀😂👉⊙`(💕👍△％《▶③é:|＜；*⑦/〈😭※~―@"—≫✨[㎎⑥㏊∼ㆍ＞－^❤ℓ：>🤣★ㅤ李<ｍ·Ⅲ＋.◈㎢■…$≪㎞‥□」🏻㎾＂④・{😆“㎥’'
     for p in punct_mapping:
@@ -125,6 +129,7 @@ def tokenized_dataset(dataset, tokenizer, model, NER_marker=False):
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.ner_tagged_sent]
     else:
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.sentence]
+
         
 
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""

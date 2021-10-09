@@ -116,20 +116,22 @@ def train(args):
   BINARY = args.binary
   EPOCHS = args.epochs
   BATCH_SIZE = args.bsz
-  LEARNING_RATE = args.learning_rate
   SAVE_DIR = args.save_dir
   DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
   NER_MARKER = False if args.ner_marker.lower() in ['false', 'f', 'no', 'none'] else True
   PREPROCESSED = False if args.preprocessed.lower() in ['false', 'f', 'no', 'none'] else True
+  TRAIN_SET = "../dataset/train/" + args.train_set
+  LEARNING_RATE = args.lr
+  SAVE_STEPS = args.save_steps
   phase = 0
-  
+
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   
   # load dataset
 
   if DEV_SET is True:
-    train_dataset = load_data("../dataset/train/train_0.8.csv", PREPROCESSED, NER_MARKER, BINARY)
+    train_dataset = load_data(TRAIN_SET, PREPROCESSED, NER_MARKER, BINARY)
     dev_dataset = load_data("../dataset/train/eval_0.8.csv", PREPROCESSED, NER_MARKER, BINARY) # validation용 데이터는 따로 만드셔야 합니다.
 
     train_label = label_to_num(train_dataset['label'].values, BINARY)
@@ -163,33 +165,35 @@ def train(args):
   # 사용한 option 외에도 다양한 option들이 있습니다.
   # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
   training_args = TrainingArguments(
-    output_dir='./results',          # output directory
-    save_total_limit=2,              # number of total save model.
-    save_steps=500,                 # model saving step.
-    num_train_epochs=EPOCHS,              # total number of training epochs
-    learning_rate=LEARNING_RATE,               # learning_rate
-    per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
-    per_device_eval_batch_size=BATCH_SIZE,   # batch size for evaluation
-    warmup_steps=500,                # number of warmup steps for learning rate scheduler
 
-    weight_decay=0.01,               # strength of weight decay
-    logging_dir='./logs',            # directory for storing logs
-    logging_steps=250,              # log saving step.
-    evaluation_strategy='steps', # evaluation strategy to adopt during training
-                                  # `no`: No evaluation during training.
-                                  # `steps`: Evaluate every `eval_steps`.
-                                  # `epoch`: Evaluate every end of epoch.
-    eval_steps = 500,            # evaluation step.
+    output_dir='./results',                    # output directory
+    save_total_limit=2,                        # number of total save model.
+    save_steps=SAVE_STEPS,                     # model saving step.
+    num_train_epochs=EPOCHS,                   # total number of training epochs
+    learning_rate=LEARNING_RATE,               # learning_rate
+    per_device_train_batch_size=BATCH_SIZE,    # batch size per device during training
+    per_device_eval_batch_size=BATCH_SIZE,     # batch size for evaluation
+    # warmup_steps=500,                        # number of warmup steps for learning rate scheduler
+    weight_decay=0.01,                         # strength of weight decay
+    logging_dir='./logs',                      # directory for storing logs
+    logging_steps=100,                         # log saving step.
+    evaluation_strategy='steps',               # evaluation strategy to adopt during training
+                                               # `no`: No evaluation during training.
+                                               # `steps`: Evaluate every `eval_steps`.
+                                               # `epoch`: Evaluate every end of epoch.
+    eval_steps = SAVE_STEPS,                   # evaluation step.
+
     load_best_model_at_end = True,
-    metric_for_best_model='micro f1 score',
-    greater_is_better=True,
+    metric_for_best_model = "micro f1 score",
+    greater_is_better = True,
+
   )
   trainer = Trainer(
-    model=model,                         # the instantiated 🤗 Transformers model to be trained
-    args=training_args,                  # training arguments, defined above
-    train_dataset=RE_train_dataset,         # training dataset
-    eval_dataset=RE_dev_dataset,            # evaluation dataset
-    compute_metrics=compute_metrics         # define metrics function
+    model=model,                               # the instantiated 🤗 Transformers model to be trained
+    args=training_args,                        # training arguments, defined above
+    train_dataset=RE_train_dataset,            # training dataset
+    eval_dataset=RE_dev_dataset,               # evaluation dataset
+    compute_metrics=compute_metrics            # define metrics function
   )
 
   # train model
@@ -208,12 +212,14 @@ if __name__ == '__main__':
 
   parser.add_argument('--model_name', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
-  parser.add_argument('--epochs', type=int, default=5)
+  parser.add_argument('--epochs', type=int, default=2)
   parser.add_argument('--save_dir', type=str, default="")
-  parser.add_argument('--dev_set', type=str, default="False")
-  parser.add_argument('--ner_marker', type=str, default="False")
-  parser.add_argument('--learning_rate', type=float, default=3e-5)
+  parser.add_argument('--dev_set', type=str, default="True")
   parser.add_argument('--preprocessed', type=str, default="False")
+  parser.add_argument('--train_set', type=str, default="train.csv")
+  parser.add_argument('--lr', type=float, default=1e-5)
+  parser.add_argument('--save_steps', type=int, default=500)
+  parser.add_argument('--ner_marker', type=str, default="False")
 
   parser.add_argument('--binary', type=bool, default=False)
   parser.add_argument('--binary_model_name', type=str, default="klue/roberta-large")
@@ -222,6 +228,7 @@ if __name__ == '__main__':
   parser.add_argument('--binary_learning_rate', type=float, default=3e-5)
   parser.add_argument('--binary_save_dir', type=str, default="/opt/ml/code/binary_best_model/")
   parser.add_argument('--binary_dev_set', type=str, default="True")
+
   args = parser.parse_args()
   
   print(args)
