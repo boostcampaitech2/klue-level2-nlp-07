@@ -72,8 +72,7 @@ def preprocessing_dataset_ner(dataset):
                               'subject_ner':subject_ner,'object_entity':object_entity,'object_ner':object_ner,
                               'label':dataset['label']})
 
-  out_dataset['ner_
-              ged_sent'] = [add_ner_marker(row) for idx, row in out_dataset.iterrows()]
+  out_dataset['ner_tagged_sent'] = [add_ner_marker(row) for idx, row in out_dataset.iterrows()]
 
   out_dataset['sentence'] = out_dataset['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
   out_dataset['subject_entity'] = out_dataset['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
