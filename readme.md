@@ -1,5 +1,5 @@
 # Boostcamp Relation Extraction Competition
-## **개요**
+## **Table of contents**
 
 1. [Introduction](#introduction)
 2. [Project Outline](#project-outline)
