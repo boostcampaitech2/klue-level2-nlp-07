@@ -94,7 +94,8 @@
   
 ### Evaluation  
 
-단일 모델의 Evaluation 결과는 아래와 같습니다. 아래 리스트의 모델은 특수문자를 제거한 (`special character removal`) 데이터 전처리 과정을 거친 후 학습이 진행되었습니다. 
+단일 모델의 Evaluation 결과는 아래와 같습니다.  
+아래 리스트의 모델은 특수문자를 제거한 (`special character removal`) 데이터 전처리 과정을 거친 후 학습이 진행되었습니다. 
 
 | Method | Micro F1-score |
 | --- | --- |
