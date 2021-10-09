@@ -13,8 +13,10 @@ def num_to_label(label):
     origin_label.append(dict_num_to_label[v])
   
   return origin_label
-output1_data = pd.read_csv('./prediction/submission_final2.csv')
-output2_data = pd.read_csv('./prediction/final.csv')
+
+output1_data = pd.read_csv('./output1.csv')
+output2_data = pd.read_csv('./output2.csv')
+
 
 output1_probs = []
 for string in output1_data['probs']:
@@ -26,8 +28,10 @@ for string in output2_data['probs']:
     probs = ast.literal_eval(string)
     output2_probs.append(probs)
 
-weight1 = 0.7
-weight2 = 0.3
+
+weight1 = 0.3
+weight2 = 0.7
+
 output_probs = []
 single_probs = []
 for probs1, probs2 in zip(output1_probs, output2_probs):
@@ -42,4 +46,6 @@ for output_prob in output_probs:
     output_prob = str(output_prob)
 
 output = pd.DataFrame({'id':output1_data['id'],'pred_label':output_preds,'probs':output_probs,})
-output.to_csv('./prediction/final_real.csv', index=False)
+
+output.to_csv('./submission_3.csv', index=False)
+
