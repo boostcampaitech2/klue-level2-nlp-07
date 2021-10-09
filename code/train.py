@@ -78,7 +78,6 @@ def klue_re_auprc(probs, labels, binary):
 
 def compute_metrics(pred):
   global phase
-  global BINARY
 
   """ validation을 위한 metrics function """
   labels = pred.label_ids
@@ -111,6 +110,8 @@ def label_to_num(label, binary):
   return num_label
 
 def train(args):
+  global BINARY
+  global phase
   # load model and tokenizer
   MODEL_NAME = args.model_name
   BINARY = args.binary
