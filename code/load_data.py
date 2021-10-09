@@ -92,7 +92,7 @@ def add_ner_marker(row):
     
     return sent
 
-def load_data(dataset_dir, preprocessed=False, NER_tagging=False, Binary=False):
+def load_data(dataset_dir, preprocessed=False, NER_marker=False, Binary=False):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
   if preprocessed:
@@ -100,7 +100,7 @@ def load_data(dataset_dir, preprocessed=False, NER_tagging=False, Binary=False):
   if Binary:
     pd_dataset = drop_no_relation_data(pd_dataset)
   
-  if NER_tagging:
+  if NER_marker:
     dataset = preprocessing_dataset_ner(pd_dataset)
   else:
     dataset = preprocessing_dataset(pd_dataset)  
@@ -119,9 +119,9 @@ def clean_sentence(sentence):
 
 
 
-def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
+def tokenized_dataset(dataset, tokenizer, model, NER_marker=False):
 
-    if NER_tagging:
+    if NER_marker:
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.ner_tagged_sent]
     else:
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.sentence]

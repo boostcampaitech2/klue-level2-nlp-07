@@ -119,7 +119,8 @@ def train(args):
   LEARNING_RATE = args.learning_rate
   SAVE_DIR = args.save_dir
   DEV_SET = False if args.dev_set.lower() in ['false', 'f', 'no', 'none'] else True
-  NER_TAG = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
+  NER_MARKER = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
+  PREPROCESSED = False if args.preprocessed.lower() in ['false', 'f', 'no', 'none'] else True
   phase = 0
   
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -128,24 +129,24 @@ def train(args):
   # load dataset
 
   if DEV_SET is True:
-    train_dataset = load_data("../dataset/train/train_0.8.csv", NER_TAG, BINARY)
-    dev_dataset = load_data("../dataset/train/eval_0.8.csv", NER_TAG, BINARY) # validation용 데이터는 따로 만드셔야 합니다.
+    train_dataset = load_data("../dataset/train/train_0.8.csv", PREPROCESSED, NER_MARKER, BINARY)
+    dev_dataset = load_data("../dataset/train/eval_0.8.csv", PREPROCESSED, NER_MARKER, BINARY) # validation용 데이터는 따로 만드셔야 합니다.
 
     train_label = label_to_num(train_dataset['label'].values, BINARY)
     dev_label = label_to_num(dev_dataset['label'].values, BINARY)
 
     # tokenizing dataset
-    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
-    tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME, NER_TAG)
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_MARKER)
+    tokenized_dev = tokenized_dataset(dev_dataset, tokenizer, MODEL_NAME, NER_MARKER)
     
     # make dataset for pytorch.
     RE_train_dataset = RE_Dataset(tokenized_train, train_label)
     RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
 
   else:
-    train_dataset = load_data("../dataset/train/train.csv", NER_TAG, BINARY)
+    train_dataset = load_data("../dataset/train/train.csv", PREPROCESSED, NER_MARKER, BINARY)
     train_label = label_to_num(train_dataset['label'].values, BINARY)
-    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_TAG)
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer, MODEL_NAME, NER_MARKER)
     RE_train_dataset = RE_Dataset(tokenized_train, train_label)
     RE_dev_dataset = RE_Dataset(tokenized_train, train_label)
 
@@ -212,6 +213,7 @@ if __name__ == '__main__':
   parser.add_argument('--dev_set', type=str, default="False")
   parser.add_argument('--ner_tag', type=str, default="False")
   parser.add_argument('--learning_rate', type=float, default=3e-5)
+  parser.add_argument('--preprocessed', type=str, default="False")
 
   parser.add_argument('--binary', type=bool, default=False)
   parser.add_argument('--binary_model_name', type=str, default="klue/roberta-large")
@@ -220,7 +222,6 @@ if __name__ == '__main__':
   parser.add_argument('--binary_learning_rate', type=float, default=3e-5)
   parser.add_argument('--binary_save_dir', type=str, default="/opt/ml/code/binary_best_model/")
   parser.add_argument('--binary_dev_set', type=str, default="True")
-  
   args = parser.parse_args()
   
   print(args)
