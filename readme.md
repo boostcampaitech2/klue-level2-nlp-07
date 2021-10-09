@@ -19,24 +19,24 @@ Introduction
 김보성|김지후|김혜수|박이삭|이다곤|전미원|정두해
 :-:|:-:|:-:|:-:|:-:|:-:|:-:
 ![image1][image1]|![image2][image2]|![image3][image3]|![image4][image4]|![image5][image5]|![image6][image6]|![image7][image7]
-[Github](https://github.com/Barleysack)|[Github](https://github.com/JIHOO97
-)|[Github](https://github.com/vgptnv)|[Github](https://github.com/Tentoto)|[Github](https://github.com/DagonLee)|[Github](https://github.com/ekdub92)|[Github](https://github.com/Doohae)
+[Github](https://github.com/Barleysack)|[Github](https://github.com/JIHOO97)|[Github](https://github.com/vgptnv)|[Github](https://github.com/Tentoto)|[Github](https://github.com/DagonLee)|[Github](https://github.com/ekdub92)|[Github](https://github.com/Doohae)
 
 ### 🔅 Contribution  
-`김보성` &nbsp; Modeling • Preprocessing(Data pruning • special character removals) • Ensemble(Weighted Vote) • Github management
-`김지후` &nbsp; EDA • Data Augmentation(EDA • BackTranslation) • Binary classifier experiment
-`김혜수` &nbsp; Preprocessing (NER Marker) • Data Augmentation(Entity Swap augmentation)
-`박이삭` &nbsp; Preprocessing(clean punctuation • special character removal) • Binary classifier experiment
-`이다곤` &nbsp; Custom Token Addition • Model Embedding Size Modification • Vocab Modification • Tokenizer Experiment
-`전미원` &nbsp; Data Visualization(confusion matrix) • Modeling • Binary classifier experiment • Ensemble
-`정두해` &nbsp; Data Augmentation(EDA • AEDA • RandomDeletion • BackTranslation) • Code Abstraction
+`김보성` &nbsp; Modeling • Preprocessing(Data pruning • special character removals) • Ensemble(Weighted Vote) • Github management  
+`김지후` &nbsp; EDA • Data Augmentation(`EDA` • `BackTranslation`) • Binary classifier experiment  
+`김혜수` &nbsp; Preprocessing (NER Marker) • Data Augmentation(Entity Swap augmentation)  
+`박이삭` &nbsp; Preprocessing(clean punctuation • special character removal) • Binary classifier experiment  
+`이다곤` &nbsp; Custom Token Addition • Model Embedding Size Modification • Vocab Modification • Tokenizer Experiment  
+`전미원` &nbsp; Data Visualization • Modeling • Binary classifier experiment • Ensemble  
+`정두해` &nbsp; EDA • Data Augmentation(`EDA` • `AEDA` • `RandomDeletion` • `BackTranslation`) • Code Abstraction  
 
-[image1]: ./_img/김지수.jpg
-[image2]: ./_img/김혜수.png
-[image3]: ./_img/배지연.jpg
-[image4]: ./_img/이승현.png
-[image5]: ./_img/임문경.png
-[image6]: ./_img/진명훈.jpg
+[image1]: ./_img/김보성.jpg
+[image2]: ./_img/김지후.png
+[image3]: ./_img/김혜수.jpg
+[image4]: ./_img/박이삭.png
+[image5]: ./_img/이다곤.png
+[image6]: ./_img/전미원.jpg
+[image7]: ./_img/정두해.jpg
 
 <br/>
 
