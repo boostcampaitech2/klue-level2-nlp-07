@@ -143,3 +143,138 @@ git clone https://github.com/boostcampaitech2/image-classification-level1-08.git
 $python __main__.py -m {module} -s {script} -c {config}
 
 ```
+
+## ☕ 조지KLUE니
+
+## **개요**
+
+1. Introduction
+2. Project Outline
+3. Solution
+4. How to Use
+
+# 1. Introduction
+
+[🔅 Members](https://www.notion.so/576be90574ed46b598ab653302614800)
+
+### 🔅 Contribution
+
+`**김보성`** Modeling, Preprocessing(Data pruning, special character removals), Ensemble(Weighted Vote), Github management
+
+`**김지후`** EDA, Data Augmentation(`EDA`, `BackTranslation`), Binary classifier experiment
+
+`**김혜수`** Preprocessing (NER Marker), Data Augmentation(Entity Swap augmentation)
+
+`**박이삭`** Preprocessing(`clean punctuation`, `special character removal`), Binary classifier experiment
+
+`**이다곤`** Custom Token Addition, Model Embedding Size Modification, Vocab Modification, Tokenizer Experiment
+
+`**전미원`** Data Visualization(confusion matrix), Modeling, Binary classifier experiment, Ensemble
+
+`**정두해`** Data Augmentation(`EDA`, `AEDA`, `RandomDeletion`, `BackTranslation`), Code Abstraction
+
+# 2. Project Outline
+
+- Task : 문장 내 개체간 관계 추출 (Relation Extraction)
+- Date : 2021.09.27 - 2021.10.07 (2 weeks)
+- Description : QA 시스템 구축, 감정 분석, 요약 등 다양한 NLP task에서 문장 속 단어간의 관계 데이터는 정보 파악에서 중요한 역할을 합니다. 이번 대회의 목적은 문장, 단어에 대한 정보를 통해 문장 속에서 단어 사이의 관계를 추론하는 모델을 학습시키는 것이었습니다. 결과적으로는 총 30개의 관계 클래스 중 하나를 예측한 결과와 30개의 클래스 각각에 대해서 예측한 확률을 반환하는 모델을 생성하도록 하였습니다.
+- Train : 32,470개
+- Test : 7,765개
+
+### 🏆 Final Score
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b145ae2e-d5ee-439b-ad45-3d65cea38cf8/Untitled.png)
+
+대회 사이트 : [AI stage](https://stages.ai/competitions/75/overview/description)
+
+## **Hardware**
+
+AI stage에서 제공한 server, GPU
+
+- GPU: V100
+
+# 3. Solution
+
+### KEY POINT
+
+- No-relation의 데이터가 상대적으로 많았습니다.
+- 데이터 불균형 문제가 심각하여 Data augmentation에 대한 중요도가 크다고 판단했습니다.
+    - Back translation
+    - 대칭성이 있는 relation의 경우 subject, object entity swap
+    - Inserting NER marker
+- Weighted ensemble을 통한 성능 향상을 기대했습니다.
+
+### Checklist
+
+- [x]  EDA
+- [x]  Data Visualization (`Confusion matrix`)
+- [x]  Data Preprocessing(`special character removal`)
+- [x]  Inserting NER Marker
+- [x]  Transformer based model (`BERT`, `RoBERTa`)
+- [x]  Data Augmentation(`Back Translation`, `EDA`, `AEDA`, `Entity-Swap`)
+- [x]  Model with binary classifier
+- [x]  Ensemble(weighted voting)
+- [x]  Experimental Logging (`WandB`, `tensorboard`)
+- [ ]  Custom Model Architecture
+- [ ]  Custom Loss (Focal Loss + Label Smoothing)
+- [ ]  Stratified k-fold cross validation
+
+### Evaluation
+
+[Untitled](https://www.notion.so/a6cab54ffa4148e8a4402297ab4dd3d1)
+
+# 4. How to Use
+
+## **Installation**
+
+다음과 같은 명령어로 필요한 libraries를 다운 받습니다.
+
+`pip install -r requirements.txt`
+
+KoEDA 모듈
+
+`pip install koeda
+apt-get install g++ openjdk-8-jdk python3-dev python3-pip curl
+python3 -m pip install --upgrade pip
+python3 -m pip install konlpy
+apt-get install curl git
+bash <(curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh)`
+
+Google deep_translator 모듈
+
+`pip install -U deep-translator`
+
+## **Dataset**
+
+파일: dataset/train/train.csv, dataset/test/test_data.csv
+
+## **Data Analysis**
+
+파일: code/EDA/concat/cleanse/preprocess_EDA/translate/papago.ipynb
+
+## **Data preprocessing**
+
+파일: [code/preprocess_EDA.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/preprocess_EDA.ipynb), [translate.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/translate.py), [translate_entity.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/translate_entity.py), [create_augments.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/create_augments.py)
+
+## **Modeling**
+
+파일: [train.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/train.py), [inference.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/inference.py), [train_binary_classifier.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/train_binary_classifier.py), [inference_binary_classifier.py](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/inference_binary_classifier.py)
+
+## **Ensemble**
+
+파일: [blender.py](http://blender.py), [blender.ipynb](https://github.com/boostcampaitech2/klue-level2-nlp-07/blob/master/code/blender.ipynb)
+
+## Directory
+
+```
+.
+├──klue-level2-nlp-07
+|    ├──code/
+|    ├──dataset
+│        ├── eval
+│        ├── train
+
+```
+
+- `code` 파일 안에는 각각 **data preprocessing** • **train** • **inference**가 가능한 라이브러리가 들어있습니다
+- 사용자는 전체 코드를 내려받은 후, argument 옵션을 지정하여 개별 라이브러리 모델을 활용할 수 있습니다
