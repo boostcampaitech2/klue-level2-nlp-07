@@ -57,15 +57,15 @@ def num_to_label(label):
   
   return origin_label
 
-def load_test_dataset(dataset_dir, tokenizer, tokenizer_name, NER_TAG):
+def load_test_dataset(dataset_dir, tokenizer, tokenizer_name, NER_MARKER):
   """
     test dataset을 불러온 후,
     tokenizing 합니다.
   """
-  test_dataset = load_data(dataset_dir, NER_TAG, BINARY)
+  test_dataset = load_data(dataset_dir, NER_marker=NER_MARKER, Binary=BINARY)
   test_label = list(map(int,test_dataset['label'].values))
   # tokenizing dataset
-  tokenized_test = tokenized_dataset(test_dataset, tokenizer, tokenizer_name, NER_TAG)
+  tokenized_test = tokenized_dataset(test_dataset, tokenizer, tokenizer_name, NER_MARKER)
   return test_dataset['id'], tokenized_test, test_label
 
 def load_relation_dataset(dataframe, tokenizer, model_name):
@@ -90,9 +90,8 @@ def main(args):
   BINARY = args.binary
   MODEL_NAME = "./results/" + args.model_dir if "checkpoint" in args.model_dir else "./best_model/" + args.model_dir
   BSZ = args.bsz
-  NER_TAG = False if args.ner_tag.lower() in ['false', 'f', 'no', 'none'] else True
+  NER_MARKER = False if args.ner_marker.lower() in ['false', 'f', 'no', 'none'] else True
   SUBMISSION = args.submission
-
   
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
@@ -150,7 +149,7 @@ def main(args):
     output.to_csv('./prediction/submission_binary.csv', index=False) # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
 
   else:
-    test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, Tokenizer_NAME, NER_TAG)
+    test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer, Tokenizer_NAME, NER_MARKER)
     Re_test_dataset = RE_Dataset(test_dataset ,test_label)
 
     ## predict answer
@@ -176,7 +175,7 @@ if __name__ == '__main__':
   parser.add_argument('--tokenizer', type=str, default="klue/roberta-large")
   parser.add_argument('--bsz', type=int, default=32)
   parser.add_argument('--submission', type=str, default="submission.csv")
-  parser.add_argument('--ner_tag', type=str, default="False")
+  parser.add_argument('--ner_marker', type=str, default="False")
   parser.add_argument('--binary_save_dir', type=str, default="/opt/ml/code/binary_best_model/")
   parser.add_argument('--binary_tokenizer', type=str, default="klue/roberta-large")
   parser.add_argument('--binary_bsz', type=int, default=32)

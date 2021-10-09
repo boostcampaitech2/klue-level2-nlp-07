@@ -54,55 +54,47 @@ def preprocessing_dataset_ner(dataset):
   """
   subject_entity = []
   subject_ner = []
-  subject_start, subject_end = [], []
   object_entity = []
   object_ner = []
-  object_start, object_end = [], []
   
   for i,j in zip(dataset['subject_entity'], dataset['object_entity']):
     i, j = eval(i), eval(j)  # convert str to dict
-    sbj_ntt, sbj_ner, sbj_start, sbj_end = i["word"], i["type"], i["start_idx"], i["end_idx"]
-    obj_ntt, obj_ner, obj_start, obj_end = j["word"], j["type"], j["start_idx"], j["end_idx"]
+    sbj_ntt, sbj_ner = i["word"], i["type"]
+    obj_ntt, obj_ner = j["word"], j["type"]
 
     subject_entity.append(sbj_ntt)
     subject_ner.append(sbj_ner)
-    subject_start.append(sbj_start)
-    subject_end.append(sbj_end)
 
     object_entity.append(obj_ntt)
     object_ner.append(obj_ner)
-    object_start.append(obj_start)
-    object_end.append(obj_end)
 
   out_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,
-                              'subject_ner':subject_ner,'subject_start':subject_start,'subject_end':subject_end,
-                              'object_entity':object_entity,'object_ner':object_ner,'object_start':object_start,
-                              'object_end':object_end,'label':dataset['label']})
+                              'subject_ner':subject_ner,'object_entity':object_entity,'object_ner':object_ner,
+                              'label':dataset['label']})
 
-  out_dataset['ner_tagged_sent'] = [add_ner_tagging(row) for idx, row in out_dataset.iterrows()]
-  out_dataset.drop(["subject_start", "subject_end", "object_start", "object_end"], axis=1, inplace=True)
+  out_dataset['ner_
+              ged_sent'] = [add_ner_marker(row) for idx, row in out_dataset.iterrows()]
+
+  out_dataset['sentence'] = out_dataset['sentence'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  out_dataset['subject_entity'] = out_dataset['subject_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
+  out_dataset['object_entity'] = out_dataset['object_entity'].apply(lambda x: re.sub(r'(\d+),(\d+)', r'\1\2', x))
 
   return out_dataset
 
-def add_ner_tagging(row):
-    """ Entity의 앞뒤에 해당 Entity 의 NER 정보를 tagging 해줍니다. """
+def add_ner_marker(row):
+    """ Entity의 앞뒤에 해당 Entity 의 NER 정보를 marking 해줍니다.
+        subject와 object entity의 NER type은 각각 ^, *으로 감쌉니다.
+        전체 Entity는 @로 감싸서 전처리 합니다.
+        ex) @^ORG^광주여대@(총장 @*PER*이선재@) 평생교육원은 수료식을 실시했다고 밝혔다.
+    """
+    sent = row.sentence
 
-    sbj_start = row.subject_start
-    sbj_end = row.subject_end
-    obj_start = row.object_start
-    obj_end = row.object_end
-
-    if sbj_start > obj_start:  # object가 앞에 있을 때
-        sent = row.sentence[:obj_start] + f"@*{row.object_ner}*" + row.object_entity + f"@" + row.sentence[obj_end+1:sbj_start]
-        sent += f"@*{row.subject_ner}*" + row.subject_entity + f"@" + row.sentence[sbj_end+1:]
-
-    else:  # subject가 앞에 있을 때
-        sent = row.sentence[:sbj_start] + f"@*{row.subject_ner}*" + row.subject_entity + f"@" + row.sentence[sbj_end+1:obj_start]
-        sent += f"@*{row.object_ner}*" + row.object_entity + f"@" + row.sentence[obj_end+1:]
-
+    sent = sent.replace(row.subject_entity, f'@^{row.subject_ner}^{row.subject_entity}@')
+    sent = sent.replace(row.object_entity, f'@*{row.object_ner}*{row.object_entity}@')
+    
     return sent
 
-def load_data(dataset_dir, preprocessed=False, NER_tagging=False, Binary=False):
+def load_data(dataset_dir, preprocessed=False, NER_marker=False, Binary=False):
   """ csv 파일을 경로에 맞게 불러 옵니다. """
   pd_dataset = pd.read_csv(dataset_dir)
  
@@ -110,7 +102,7 @@ def load_data(dataset_dir, preprocessed=False, NER_tagging=False, Binary=False):
     pd_dataset = drop_no_relation_data(pd_dataset)
   if preprocessed:
     return pd_dataset
-  elif NER_tagging:
+  elif NER_marker:
     dataset = preprocessing_dataset_ner(pd_dataset)
   else:
     dataset = preprocessing_dataset(pd_dataset)  
@@ -131,9 +123,9 @@ def clean_sentence(sentence):
 
 
 
-def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
+def tokenized_dataset(dataset, tokenizer, model, NER_marker=False):
 
-    if NER_tagging:
+    if NER_marker:
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.ner_tagged_sent]
     else:
       cleaned_dataset = [clean_sentence(sent) for sent in dataset.sentence]
@@ -154,7 +146,7 @@ def tokenized_dataset(dataset, tokenizer, model, NER_tagging=False):
           return_tensors="pt",
           padding=True,
           truncation=True,
-          max_length=256,
+          max_length=256,  # default: 256
           add_special_tokens=True,
           return_token_type_ids=False if 'roberta' in model else True,
           )
