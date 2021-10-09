@@ -8,27 +8,28 @@
    <img src="./_img/value_boostcamp.png" style="width:800px; height:240px;" />
 </p>
 
-본 과정은 NAVER Connect 재단 주관으로 인공지능과 딥러닝 Production의 End-to-End를 명확히 학습하고 실무에서 구현할 수 있도록 훈련하는 약 5개월간의 교육과정입니다. 전체 과정은 이론과정(U-stage, 5주)와 실무기반 프로젝트(P-stage, 15주)로 구성되어 있으며, 이 곳에는 그 중 첫 번째 대회인 `Image Classification`과제에 대한 **Level1 - 08조** 의 문제해결방법을 기록합니다.
+Introduction
   
 <br/>
 
-## 🎨 AI Palette  
-”색칠을 하다 보면 그림이 완성되어 있을 거예요”  
+## ☕ 조지KLUE니 
+
 ### 🔅 Members  
 
 김보성|김지후|김혜수|박이삭|이다곤|전미원|정두해
 :-:|:-:|:-:|:-:|:-:|:-:|:-:
-![image1][image1]|![image2][image2]|![image3][image3]|![image4][image4]|![image5][image5]|![image6][image6]
-[Github](https://github.com/memesoo99)|[Github](https://github.com/vgptnv)|[Github](https://github.com/jiiyeon)|[Github](https://github.com/lsh3163)|[Github](https://github.com/larcane97)|[Github](https://github.com/jinmang2)
-
+![image1][image1]|![image2][image2]|![image3][image3]|![image4][image4]|![image5][image5]|![image6][image6]|![image7][image7]
+[Github](https://github.com/Barleysack)|[Github](https://github.com/JIHOO97
+)|[Github](https://github.com/vgptnv)|[Github](https://github.com/Tentoto)|[Github](https://github.com/DagonLee)|[Github](https://github.com/ekdub92)|[Github](https://github.com/Doohae)
 
 ### 🔅 Contribution  
-`김지수` &nbsp; Modeling • Feature Engineering • Age-specific model • EfficientNet Master • Out of fold  
-`김혜수` &nbsp; Dataset curation • Construct Pipeline • Mental Care • Data license verification  
-`배지연` &nbsp; Dataset generation • Dataset curation • Mask synthesis • Hyperparameter tuning  
-`이승현` &nbsp; Team Management • Dataset preprocessing • Modeling • Make task-specific loss  
-`임문경` &nbsp; EDA, Modeling • Visualizing • Search augmentation technique • MLops  
-`진명훈` &nbsp; Modeling • Active Learning • Mentoring • Huggingface pipeline • Handling imbalance problem  
+`김보성` &nbsp; Modeling • Preprocessing(Data pruning • special character removals) • Ensemble(Weighted Vote) • Github management
+`김지후` &nbsp; EDA • Data Augmentation(EDA • BackTranslation) • Binary classifier experiment
+`김혜수` &nbsp; Preprocessing (NER Marker) • Data Augmentation(Entity Swap augmentation)
+`박이삭` &nbsp; Preprocessing(clean punctuation • special character removal) • Binary classifier experiment
+`이다곤` &nbsp; Custom Token Addition • Model Embedding Size Modification • Vocab Modification • Tokenizer Experiment
+`전미원` &nbsp; Data Visualization(confusion matrix) • Modeling • Binary classifier experiment • Ensemble
+`정두해` &nbsp; Data Augmentation(EDA • AEDA • RandomDeletion • BackTranslation) • Code Abstraction
 
 [image1]: ./_img/김지수.jpg
 [image2]: ./_img/김혜수.png
