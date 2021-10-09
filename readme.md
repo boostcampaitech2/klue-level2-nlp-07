@@ -24,7 +24,7 @@
 [Github](https://github.com/Barleysack)|[Github](https://github.com/JIHOO97)|[Github](https://github.com/vgptnv)|[Github](https://github.com/Tentoto)|[Github](https://github.com/DagonLee)|[Github](https://github.com/ekdub92)|[Github](https://github.com/Doohae)
 
 ### 🔅 Contribution  
-`김보성` &nbsp; Preprocessing(Data pruning • clean punctuation) • Modeling • Ensemble(Weighted Vote) • Github management  
+`김보성` &nbsp; Preprocessing(Data pruning • clean punctuation) • Ensemble(Weighted Vote) • Github management  
 `김지후` &nbsp; EDA • Data Augmentation(`EDA` • `BackTranslation`) • Binary classifier experiment  
 `김혜수` &nbsp; Preprocessing (NER Marker) • Data Augmentation(Entity Swap augmentation)  
 `박이삭` &nbsp; Preprocessing(clean punctuation • special character removal) • Binary classifier experiment  
