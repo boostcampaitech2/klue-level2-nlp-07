@@ -36,12 +36,12 @@
 `정두해` &nbsp; EDA • Data Augmentation(`EDA` • `AEDA` • `RandomDeletion` • `BackTranslation`) • Code Abstraction  
 
 [image1]: https://avatars.githubusercontent.com/u/56079922?v=4
-[image2]: ./_img/김지후.png
+[image2]: https://avatars.githubusercontent.com/u/57887761?v=4
 [image3]: https://avatars.githubusercontent.com/u/62708568?v=4
 [image4]: https://avatars.githubusercontent.com/u/80071163?v=4
-[image5]: https://user-images.githubusercontent.com/62708568/136649700-8bf58272-8263-4d5e-ad5c-334b5d5ebeee.png
-[image6]: https://user-images.githubusercontent.com/62708568/136649737-cd28055c-0b41-4c62-a2a1-ef151b7ebccb.jpg
-[image7]: https://user-images.githubusercontent.com/62708568/136649705-69c9d2b7-fa25-4a6e-97dc-78b11fabfc66.png
+[image5]: https://avatars.githubusercontent.com/u/43575986?v=4
+[image6]: https://avatars.githubusercontent.com/u/42200769?v=4
+[image7]: https://avatars.githubusercontent.com/u/80743307?v=4
 
 <br/>
 
