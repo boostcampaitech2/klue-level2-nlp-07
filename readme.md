@@ -102,7 +102,7 @@
 | `KLUE/RoBERTa-base` | 68.064 |
 | `kykim/bert-kor-base` | 68.9 |
 | `KLUE/RoBERTa-large` | 71.167 |
-| `KLUE/RoBERTa-large` + NER Marker(w/adding special_token) | 69.615 |
+| `KLUE/RoBERTa-large` + NER Marker(w/ adding special_token) | 69.615 |
 | `KLUE/RoBERTa-large` + NER Marker(w/o adding special_token) | 70.444 |
 | `KLUE/RoBERTa-large` + Entity Marker | 68.617 |
 | `KLUE/RoBERTa-large` + NER Marker + Data Augmentation(`EntitySwap`) | 69.646 |
